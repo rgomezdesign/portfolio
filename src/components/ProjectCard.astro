@@ -44,7 +44,9 @@ const { slug, title, summary, meta, tint, media } = project;
         <Icon name="arrow-right" size={20} class="card__arrow" />
       </div>
       <p class="t-body">{summary}</p>
-      <p class="card__meta t-caption">{meta.join(' · ')}</p>
+      <ul class="card__tags" aria-label="Project details">
+        {meta.map((m) => <li class="tag t-caption">{m}</li>)}
+      </ul>
     </div>
   </a>
 </li>
@@ -183,8 +185,20 @@ const { slug, title, summary, meta, tint, media } = project;
     color: var(--color-accent-text);
     transform: translateX(4px);
   }
-  .card__meta {
+  .card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
     padding-top: var(--space-8);
+  }
+  /* Mirrors Figma "Tag" */
+  .tag {
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
   }
 
   @media (max-width: 767px) {

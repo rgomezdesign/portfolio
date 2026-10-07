@@ -10,8 +10,7 @@ export const site = {
     'Product designer focused on UI/UX and motion for web and mobile. Designing thoughtful digital experiences, from first sketch to something real.',
   availability: 'Product Designer · Open to new roles',
   email: 'gomez7695@gmail.com',
-  // TODO: add your LinkedIn profile URL. The LinkedIn button is hidden until this is set.
-  linkedin: '',
+  linkedin: 'https://www.linkedin.com/in/gomezroman',
   resume: '/roman-gomez-cv.pdf',
 };
 

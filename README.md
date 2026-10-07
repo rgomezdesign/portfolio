@@ -18,7 +18,7 @@ The Figma file **Portfolio** (`2ZW96hMVfCbCqefZFIu8zF`) is the source of truth.
 | Variables `Primitives`, `Color`, `Space`, `Layout` | `src/styles/tokens.css` (`color/bg/page` → `--color-bg-page`) |
 | Layout modes Desktop / Mobile | `:root` values + `@media (max-width: 767px)` (tablet values in between) |
 | Text styles (Display, Heading 2, …) | `.t-display`, `.t-h2`, … in `src/styles/global.css` |
-| Button, Pill Nav, Tab Bar, Project Card, Experience Item, Section Header, Availability, Brand | `src/components/*.astro` |
+| Button, Pill Nav, Tab Bar, Project Card (with Tags), Experience Item, Section Header, Availability, Brand | `src/components/*.astro` |
 
 Rule: no hard-coded colors or spacing in components; use the tokens.
 
@@ -26,7 +26,6 @@ Rule: no hard-coded colors or spacing in components; use the tokens.
 
 All copy is in `src/data/site.ts`: hero, projects, about, experience, email, LinkedIn, resume path.
 
-- **LinkedIn:** set `site.linkedin`. The LinkedIn button stays hidden until then.
 - **Resume:** `public/roman-gomez-cv.pdf` (opens in a new tab).
 - **Project images:** `src/assets/work/`. Astro converts them to WebP at the right sizes.
 - **nutu card:** uses placeholder phone art until real screens are cleared to share.
