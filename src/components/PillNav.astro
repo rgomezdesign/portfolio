@@ -1,7 +1,7 @@
 ---
 import Button from './Button.astro';
 import { nav } from '../data/site';
-// Mirrors Figma "Pill Nav". Desktop + tablet only (≥768px). The active background slides between links.
+// Mirrors Figma "Pill Nav": Work · About · Contact. Desktop + tablet (≥768px). The active background slides between links.
 const links = nav.filter((n) => n.id !== 'contact');
 ---
 <nav class="pill" aria-label="Primary" data-nav-root>
@@ -41,14 +41,7 @@ const links = nav.filter((n) => n.id !== 'contact');
       transform: translate(var(--pill-shift, -50%), -12px);
     }
   }
-  /* Narrow tablets: no room to center beside the brand, so align right */
-  @media (max-width: 959px) {
-    .pill {
-      --pill-shift: 0;
-      left: auto;
-      right: var(--layout-margin);
-    }
-  }
+
   .pill__links {
     position: relative;
     display: flex;

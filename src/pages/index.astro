@@ -30,14 +30,14 @@ const year = new Date().getFullYear();
     </section>
 
     <section class="work" id="work" aria-labelledby="work-title">
-      <div data-reveal><SectionHeader id="work-title" title="Selected work" meta={`${projects.length} case studies`} /></div>
+      <div data-reveal><SectionHeader id="work-title" title="Selected work" /></div>
       <ul class="work__grid">
         {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
       </ul>
     </section>
 
-    <div class="about-exp">
-      <section class="about" id="about" aria-labelledby="about-title" data-reveal>
+    <div class="about-exp" id="about">
+      <section class="about" aria-labelledby="about-title" data-reveal>
         <h2 class="t-h2" id="about-title">About</h2>
         {about.map((p) => <p class="t-lead">{p}</p>)}
       </section>

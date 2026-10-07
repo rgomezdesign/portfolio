@@ -97,7 +97,7 @@ export const experience = [
 
 export const nav = [
   { id: 'work', label: 'Work', icon: 'work' },
-  { id: 'about', label: 'About', icon: 'about' },
-  { id: 'experience', label: 'Experience', icon: 'experience' },
+  { id: 'about', label: 'About', icon: 'about' }, // covers About + Experience
+
   { id: 'contact', label: 'Contact', icon: 'contact' },
 ] as const;

@@ -1,7 +1,7 @@
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- Active section → pill nav + tab bar ---------- */
-const sectionIds = ['work', 'about', 'experience', 'contact'] as const;
+const sectionIds = ['work', 'about', 'contact'] as const;
 const sections = sectionIds
   .map((id) => document.getElementById(id))
   .filter((el): el is HTMLElement => el !== null);

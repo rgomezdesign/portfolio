@@ -34,8 +34,9 @@ All copy is in `src/data/site.ts`: hero, projects, about, experience, email, Lin
 ## Responsive behavior
 
 - ≥1024px: 12-column grid, 2×2 work cards, About and Experience side by side, pill nav centered.
-- 768–1023px: 40px margins, About and Experience stacked; pill nav right-aligned below 960px.
-- <768px: one column, bottom tab bar (active tab shows icon + label, fixed 308px wide).
+- 768–1023px: 40px margins, About and Experience stacked.
+- <768px: one column, bottom tab bar (active tab shows icon + label, fixed 238px wide).
+- Nav is Work · About · Contact everywhere. "About" covers the About + Experience row.
 
 ## Motion
 

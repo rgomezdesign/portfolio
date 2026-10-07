@@ -1,7 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { nav } from '../data/site';
-// Mirrors Figma "Tab Bar". Mobile only (<768px). Fixed width so only the highlight moves.
+// Mirrors Figma "Tab Bar": Work · About · Contact. Mobile only (<768px). Fixed 238px so only the highlight moves.
 ---
 <nav class="tabbar" aria-label="Primary" data-nav-root>
   {nav.map((t, i) => (
@@ -24,7 +24,7 @@ import { nav } from '../data/site';
       z-index: 50;
       display: flex;
       gap: var(--space-4);
-      width: 308px;
+      width: 238px;
       padding: var(--space-6);
       border: 1px solid var(--color-border-strong);
       border-radius: var(--radius-full);
