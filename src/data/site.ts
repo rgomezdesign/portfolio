@@ -8,7 +8,7 @@ export const site = {
   title: 'Roman Gomez — Product Designer',
   description:
     'Product designer focused on UI/UX and motion for web and mobile. Designing thoughtful digital experiences, from first sketch to something real.',
-  availability: 'Product Designer · Open to new roles',
+  eyebrow: 'Product Designer',
   email: 'gomez7695@gmail.com',
   linkedin: 'https://www.linkedin.com/in/gomezroman',
   resume: '/roman-gomez-cv.pdf',

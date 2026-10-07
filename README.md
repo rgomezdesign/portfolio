@@ -18,7 +18,7 @@ The Figma file **Portfolio** (`2ZW96hMVfCbCqefZFIu8zF`) is the source of truth.
 | Variables `Primitives`, `Color`, `Space`, `Layout` | `src/styles/tokens.css` (`color/bg/page` → `--color-bg-page`) |
 | Layout modes Desktop / Mobile | `:root` values + `@media (max-width: 767px)` (tablet values in between) |
 | Text styles (Display, Heading 2, …) | `.t-display`, `.t-h2`, … in `src/styles/global.css` |
-| Button, Pill Nav, Tab Bar, Project Card (with Tags), Experience Item, Section Header, Availability, Brand | `src/components/*.astro` |
+| Button, Pill Nav, Tab Bar, Project Card (with Tags), Experience Item, Section Header, Eyebrow, Brand | `src/components/*.astro` |
 
 Rule: no hard-coded colors or spacing in components; use the tokens.
 
@@ -39,7 +39,7 @@ All copy is in `src/data/site.ts`: hero, projects, about, experience, email, Lin
 
 ## Motion
 
-Hero entrance stagger, scroll reveals (only for content below the fold), sliding nav highlight, tab label unfold, card hover lift, button press, one availability ping. Everything is disabled under `prefers-reduced-motion`, and all content stays visible without JavaScript.
+Hero entrance stagger, scroll reveals (only for content below the fold), sliding nav highlight, tab label unfold, card hover lift, button press. Everything is disabled under `prefers-reduced-motion`, and all content stays visible without JavaScript.
 
 ## Case studies
 

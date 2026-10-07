@@ -1,11 +1,13 @@
 ---
+// Mirrors Figma "Eyebrow". The dot is an optional availability signal (off by default).
 interface Props {
   text: string;
+  dot?: boolean;
 }
-const { text } = Astro.props;
+const { text, dot = false } = Astro.props;
 ---
 <p class="availability t-caption">
-  <span class="availability__dot" aria-hidden="true"></span>
+  {dot && <span class="availability__dot" aria-hidden="true"></span>}
   <span class="availability__text">{text}</span>
 </p>
 
