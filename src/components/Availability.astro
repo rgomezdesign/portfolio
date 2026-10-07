@@ -1,0 +1,48 @@
+---
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+<p class="availability t-caption">
+  <span class="availability__dot" aria-hidden="true"></span>
+  <span class="availability__text">{text}</span>
+</p>
+
+<style>
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-10);
+  }
+  .availability__text {
+    color: var(--color-text-secondary);
+  }
+  .availability__dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent-brand);
+  }
+  /* One soft ping after load — signals "available" without nagging. */
+  .availability__dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-accent-brand);
+    animation: ping 1.6s var(--ease-out) 900ms 2 both;
+  }
+  @keyframes ping {
+    0% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    80%,
+    100% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+</style>

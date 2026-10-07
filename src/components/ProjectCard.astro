@@ -1,0 +1,201 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Project } from '../data/site';
+// Mirrors Figma "Project Card" (Size Default/Compact handled by container units) + Media/Browser, Media/Phones.
+interface Props {
+  project: Project;
+  index?: number;
+}
+const { project, index = 0 } = Astro.props;
+const { slug, title, summary, meta, tint, media } = project;
+---
+<li class="card-item" data-reveal style={`--i:${index % 2}`}>
+  <a class="card" href={`/work/${slug}`}>
+    <div class="card__media" style={`--tint:${tint}`}>
+      {media.kind === 'browser' ? (
+        <div class="browser">
+          <div class="browser__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <Image
+            src={media.image}
+            alt={media.alt}
+            widths={[560, 840, 1120]}
+            sizes="(max-width: 767px) 90vw, (max-width: 1023px) 44vw, 560px"
+            class="browser__shot"
+            loading={index < 2 ? 'eager' : 'lazy'}
+          />
+        </div>
+      ) : (
+        <div class="phones" role="img" aria-label="nutu app screens (preview coming soon)">
+          {[0, 1, 2].map((p) => (
+            <div class:list={['phone', { 'phone--raised': p === 1 }]}>
+              <span class="phone__bar"></span>
+              <span class="phone__tile phone__tile--accent"></span>
+              <span class="phone__tile"></span>
+              <span class="phone__tile"></span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+    <div class="card__text">
+      <div class="card__title-row">
+        <h3 class="t-h3">{title}</h3>
+        <Icon name="arrow-right" size={20} class="card__arrow" />
+      </div>
+      <p class="t-body">{summary}</p>
+      <p class="card__meta t-caption">{meta.join(' · ')}</p>
+    </div>
+  </a>
+</li>
+
+<style>
+  .card {
+    display: grid;
+    gap: var(--space-24);
+    border-radius: var(--radius-lg);
+  }
+  .card:focus-visible {
+    outline-offset: 6px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Media panel: tinted, the frame inside bleeds off the bottom edge */
+  .card__media {
+    position: relative;
+    aspect-ratio: 624 / 412;
+    overflow: hidden;
+    container-type: inline-size;
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+    isolation: isolate;
+  }
+
+  .browser,
+  .phones {
+    transition:
+      transform 520ms var(--ease-out),
+      box-shadow 520ms var(--ease-out);
+  }
+  .card:hover .browser,
+  .card:focus-visible .browser,
+  .card:hover .phones,
+  .card:focus-visible .phones {
+    transform: translateY(-8px);
+  }
+
+  .browser {
+    position: absolute;
+    top: 11.5cqw;
+    left: 5.2cqw;
+    right: 5.2cqw;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+  }
+  .card:hover .browser {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.05),
+      0 18px 40px -10px rgb(0 0 0 / 0.16);
+  }
+  .browser__bar {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-10) var(--space-14);
+    background: var(--color-bg-subtle);
+  }
+  .browser__bar i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+  .browser__shot {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 560 / 334;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  /* nutu placeholder phones — replace with real screens once cleared to share */
+  .phones {
+    position: absolute;
+    top: 9cqw;
+    left: 50%;
+    display: flex;
+    align-items: flex-start;
+    gap: 2.6cqw;
+    translate: -50% 0;
+  }
+  .phone {
+    display: grid;
+    align-content: start;
+    gap: 2.2cqw;
+    width: 25.6cqw;
+    aspect-ratio: 160 / 340;
+    margin-top: 6.4cqw;
+    padding: 6.4cqw 3.8cqw 0;
+    border: 0.8cqw solid #1c1c3a;
+    border-radius: 4.5cqw;
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+  }
+  .phone--raised {
+    margin-top: 0;
+  }
+  .phone__bar {
+    width: 60%;
+    height: 1.3cqw;
+    margin-bottom: 1.6cqw;
+    border-radius: 1cqw;
+    background: #5b5bd6;
+  }
+  .phone__tile {
+    height: 10.2cqw;
+    border-radius: 1.9cqw;
+    background: var(--color-bg-subtle);
+  }
+  .phone__tile--accent {
+    background: #eef0ff;
+  }
+
+  .card__text {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .card__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+  }
+  .card :global(.card__arrow) {
+    flex: none;
+    color: var(--color-accent-brand);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out);
+  }
+  .card:hover :global(.card__arrow),
+  .card:focus-visible :global(.card__arrow) {
+    color: var(--color-accent-text);
+    transform: translateX(4px);
+  }
+  .card__meta {
+    padding-top: var(--space-8);
+  }
+
+  @media (max-width: 767px) {
+    .card {
+      gap: var(--space-16);
+    }
+    .card__media {
+      aspect-ratio: 350 / 252;
+    }
+    .phone {
+      width: 26.5cqw;
+    }
+  }
+</style>

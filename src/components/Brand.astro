@@ -1,0 +1,22 @@
+---
+import LogoMark from './LogoMark.astro';
+---
+<a class="brand" href="/" aria-label="Roman Gomez, home">
+  <LogoMark size={24} />
+  <span class="t-label-strong">Roman Gomez</span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-10);
+    border-radius: var(--radius-sm);
+  }
+  .brand :global(.logo-mark) {
+    transition: transform var(--duration-base) var(--ease-spring);
+  }
+  .brand:hover :global(.logo-mark) {
+    transform: rotate(-8deg) scale(1.06);
+  }
+</style>

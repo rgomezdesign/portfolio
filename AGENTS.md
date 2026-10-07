@@ -1,5 +1,6 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Portfolio — Astro
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- Stack: Astro 7 (static), plain CSS with design tokens, self-hosted Inter. No UI framework.
+- Design source of truth: Figma file `2ZW96hMVfCbCqefZFIu8zF` (Portfolio). Tokens in `src/styles/tokens.css` use the same names as the Figma variables (`color/bg/page` → `--color-bg-page`).
+- Components in `src/components/` mirror the Figma components 1:1 (Button, PillNav, TabBar, ProjectCard, ExperienceItem, …).
+- Content lives in `src/data/site.ts`.

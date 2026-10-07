@@ -1,0 +1,40 @@
+---
+interface Props {
+  company: string;
+  years: string;
+  role: string;
+  description: string;
+}
+const { company, years, role, description } = Astro.props;
+---
+<li class="exp">
+  <div class="exp__head">
+    <h3 class="t-h3">{company}</h3>
+    <p class="t-caption">{years}</p>
+  </div>
+  <p class="exp__role t-label">{role}</p>
+  <p class="t-body">{description}</p>
+</li>
+
+<style>
+  .exp {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: var(--space-24);
+    border-top: 1px solid var(--color-border-default);
+  }
+  .exp__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-16);
+  }
+  .exp__role {
+    color: var(--color-text-secondary);
+  }
+  @media (max-width: 767px) {
+    .exp {
+      padding-block: var(--space-16);
+    }
+  }
+</style>

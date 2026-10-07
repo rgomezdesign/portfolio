@@ -1,0 +1,17 @@
+---
+interface Props {
+  size?: number;
+}
+const { size = 24 } = Astro.props;
+---
+<svg class="logo-mark" width={size} height={size} viewBox="80 80 640 640" aria-hidden="true">
+  <path d="M80 719V487A407 407 0 0 1 487 80h58v116h-58A291 291 0 0 0 196 487v232Z" />
+  <path d="M604 80h115v407A232 232 0 1 1 487 255h58v116h-58A116 116 0 1 0 604 487Z" />
+</svg>
+
+<style>
+  .logo-mark {
+    fill: var(--color-accent-brand);
+    flex: none;
+  }
+</style>

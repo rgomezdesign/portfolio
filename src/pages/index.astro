@@ -1,0 +1,226 @@
+---
+import Base from '../layouts/Base.astro';
+import Brand from '../components/Brand.astro';
+import PillNav from '../components/PillNav.astro';
+import TabBar from '../components/TabBar.astro';
+import Availability from '../components/Availability.astro';
+import Button from '../components/Button.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ExperienceItem from '../components/ExperienceItem.astro';
+import CopyEmail from '../components/CopyEmail.astro';
+import { site, hero, projects, about, experience } from '../data/site';
+const year = new Date().getFullYear();
+---
+<Base>
+  <header class="top page">
+    <Brand />
+  </header>
+  <PillNav />
+
+  <main id="main" class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="enter" style="--i:0"><Availability text={site.availability} /></div>
+      <h1 class="hero__title t-display enter" id="hero-title" style="--i:1">{hero.title}</h1>
+      <p class="hero__lead t-lead enter" style="--i:2">{hero.lead}</p>
+      <div class="actions enter" style="--i:3">
+        <Button href="#work">View work</Button>
+        <Button href={site.resume} variant="secondary" icon="external" external aria-label="Resume (PDF, opens in a new tab)">Resume</Button>
+      </div>
+    </section>
+
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div data-reveal><SectionHeader id="work-title" title="Selected work" meta={`${projects.length} case studies`} /></div>
+      <ul class="work__grid">
+        {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+      </ul>
+    </section>
+
+    <div class="about-exp">
+      <section class="about" id="about" aria-labelledby="about-title" data-reveal>
+        <h2 class="t-h2" id="about-title">About</h2>
+        {about.map((p) => <p class="t-lead">{p}</p>)}
+      </section>
+
+      <section class="experience" id="experience" aria-labelledby="experience-title" data-reveal style="--i:1">
+        <h2 class="t-h2" id="experience-title">Experience</h2>
+        <ul>
+          {experience.map((e) => <ExperienceItem {...e} />)}
+        </ul>
+        <div class="experience__resume">
+          <Button href={site.resume} variant="secondary" icon="external" external aria-label="View full resume (PDF, opens in a new tab)">View full resume</Button>
+        </div>
+      </section>
+    </div>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact__inner" data-reveal>
+        <h2 class="t-display" id="contact-title">Let’s work <span class="contact__accent">together</span>.</h2>
+        <p class="contact__lead t-lead">I’m open to product design roles. The fastest way to reach me is email.</p>
+        <div class="actions contact__actions">
+          <Button href={`mailto:${site.email}`}>Email me</Button>
+          {site.linkedin && (
+            <Button href={site.linkedin} variant="secondary" icon="external" external aria-label="LinkedIn (opens in a new tab)">LinkedIn</Button>
+          )}
+        </div>
+        <CopyEmail email={site.email} />
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer page">
+    <p class="t-caption">© {year} Roman Gomez</p>
+  </footer>
+
+  <TabBar />
+</Base>
+
+<style>
+  .top {
+    position: absolute;
+    top: 46px;
+    left: 0;
+    right: 0;
+    z-index: 40;
+  }
+  .hero {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-32);
+    padding-top: var(--space-160);
+  }
+  .hero__title {
+    max-width: 845px;
+    text-wrap: wrap;
+  }
+  .hero__lead {
+    max-width: 628px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-12);
+    padding-top: var(--space-8);
+  }
+
+  .work {
+    display: grid;
+    gap: var(--space-48);
+    padding-top: var(--space-112);
+  }
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-80) var(--space-32);
+  }
+
+  .about-exp {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--layout-gutter);
+    padding-top: var(--layout-section-gap);
+  }
+  .about {
+    grid-column: 1 / 6;
+    display: grid;
+    align-content: start;
+    gap: var(--space-24);
+  }
+  .experience {
+    grid-column: 7 / 13;
+    display: grid;
+    align-content: start;
+    gap: var(--space-24);
+  }
+  .experience__resume {
+    padding-top: var(--space-8);
+  }
+
+  .contact {
+    padding-top: var(--layout-section-gap);
+  }
+  .contact__inner {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-32);
+    padding-top: var(--space-80);
+    border-top: 1px solid var(--color-border-default);
+  }
+  .contact__accent {
+    color: var(--color-accent-brand);
+  }
+  .contact__lead {
+    max-width: 628px;
+  }
+  .contact__actions {
+    padding-top: 0;
+  }
+
+  .footer {
+    padding-top: var(--space-112);
+    padding-bottom: var(--space-48);
+  }
+
+  /* Tablet */
+  @media (max-width: 1023px) {
+    .hero {
+      padding-top: 152px;
+    }
+    .work__grid {
+      gap: var(--space-64) var(--space-24);
+    }
+    .about,
+    .experience {
+      grid-column: 1 / -1;
+    }
+    .about {
+      max-width: 680px;
+    }
+    .experience {
+      padding-top: var(--space-80);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .top {
+      position: static;
+      padding-top: var(--space-24);
+    }
+    .hero {
+      gap: var(--space-20);
+      padding-top: var(--space-48);
+    }
+    .actions {
+      padding-top: var(--space-4);
+    }
+    .work {
+      gap: var(--space-24);
+      padding-top: var(--space-64);
+    }
+    .work__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-48);
+    }
+    .about {
+      gap: var(--space-16);
+    }
+    .experience {
+      gap: var(--space-16);
+      padding-top: var(--space-64);
+    }
+    .contact__inner {
+      gap: var(--space-20);
+      padding-top: var(--space-40);
+    }
+    .contact__actions {
+      display: grid;
+      width: 100%;
+      gap: var(--space-10);
+    }
+    .footer {
+      padding-top: var(--space-64);
+      padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+</style>

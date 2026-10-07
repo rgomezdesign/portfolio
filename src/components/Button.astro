@@ -1,0 +1,78 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+// Mirrors Figma "Button": Variant = Primary | Secondary, optional trailing icon.
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  icon?: IconName;
+  external?: boolean;
+  block?: boolean;
+  class?: string;
+  'aria-label'?: string;
+  [key: string]: unknown;
+}
+const { href, variant = 'primary', icon, external = false, block = false, class: className, ...rest } = Astro.props;
+---
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`, { 'btn--block': block }, className]}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  {...rest}
+>
+  <span class="t-label"><slot /></span>
+  {icon && <Icon name={icon} size={18} class="btn__icon" />}
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-6);
+    min-height: 44px;
+    padding: var(--space-12) var(--space-20);
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+  .btn--primary {
+    background: var(--color-action-primary);
+    color: var(--color-text-inverse);
+  }
+  .btn--primary:hover {
+    background: var(--color-action-primary-hover);
+  }
+  .btn--secondary {
+    background: var(--color-action-secondary);
+    border-color: var(--color-border-strong);
+    color: var(--color-text-primary);
+  }
+  .btn--secondary:hover {
+    background: var(--color-action-secondary-hover);
+    border-color: var(--color-icon-default);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-full);
+  }
+  .btn :global(.btn__icon) {
+    color: currentColor;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .btn:hover :global(.btn__icon) {
+    transform: translate(2px, -2px);
+  }
+  .btn--block {
+    width: 100%;
+  }
+</style>

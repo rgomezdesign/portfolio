@@ -1,27 +1,19 @@
 {
-  "name": "portfolio",
-  "version": "0.1.0",
+  "name": "rgomezdesign",
+  "type": "module",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@fontsource-variable/inter": "^5.2.5",
+    "astro": "^7.3.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "tailwindcss": "^4",
+    "@astrojs/check": "latest",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import Brand from '../../components/Brand.astro';
+import Button from '../../components/Button.astro';
+import { projects } from '../../data/site';
+
+// Placeholder until each case study is designed in Figma and built.
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+const { project } = Astro.props;
+---
+<Base title={`${project.title} — Roman Gomez`} description={project.summary}>
+  <header class="page top"><Brand /></header>
+  <main id="main" class="page placeholder">
+    <p class="t-caption">{project.meta.join(' · ')}</p>
+    <h1 class="t-display">{project.title}</h1>
+    <p class="t-lead">{project.summary}. The full case study is on its way.</p>
+    <Button href="/#work">Back to work</Button>
+  </main>
+</Base>
+
+<style>
+  .top {
+    padding-top: 46px;
+  }
+  .placeholder {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-24);
+    padding-block: var(--space-112);
+  }
+  .placeholder .t-lead {
+    max-width: 628px;
+  }
+</style>

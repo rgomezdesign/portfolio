@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Brand from '../components/Brand.astro';
+import Button from '../components/Button.astro';
+---
+<Base title="Page not found — Roman Gomez">
+  <header class="page top"><Brand /></header>
+  <main id="main" class="page nf">
+    <h1 class="t-display">This page doesn’t exist.</h1>
+    <p class="t-lead">The link may be old or mistyped.</p>
+    <Button href="/">Go home</Button>
+  </main>
+</Base>
+
+<style>
+  .top {
+    padding-top: 46px;
+  }
+  .nf {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-24);
+    padding-block: var(--space-112);
+  }
+</style>

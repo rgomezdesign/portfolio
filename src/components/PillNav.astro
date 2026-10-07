@@ -1,0 +1,109 @@
+---
+import Button from './Button.astro';
+import { nav } from '../data/site';
+// Mirrors Figma "Pill Nav". Desktop + tablet only (≥768px). The active background slides between links.
+const links = nav.filter((n) => n.id !== 'contact');
+---
+<nav class="pill" aria-label="Primary" data-nav-root>
+  <div class="pill__links">
+    <span class="pill__indicator" aria-hidden="true" data-nav-indicator></span>
+    {links.map((l, i) => (
+      <a class:list={['pill__link t-label', { 'is-active': i === 0 }]} href={`#${l.id}`} data-nav-link={l.id} data-label={l.label} aria-current={i === 0 ? 'true' : undefined}>
+        {l.label}
+      </a>
+    ))}
+  </div>
+  <Button href="#contact" data-nav-link="contact">Contact</Button>
+</nav>
+
+<style>
+  .pill {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    padding: var(--space-8);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    background: rgb(255 255 255 / 0.92);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    backdrop-filter: saturate(1.6) blur(14px);
+    box-shadow: var(--shadow-floating);
+    transform: translateX(var(--pill-shift, -50%));
+    animation: pill-in 700ms var(--ease-out) 120ms both;
+  }
+  @keyframes pill-in {
+    from {
+      opacity: 0;
+      transform: translate(var(--pill-shift, -50%), -12px);
+    }
+  }
+  /* Narrow tablets: no room to center beside the brand, so align right */
+  @media (max-width: 959px) {
+    .pill {
+      --pill-shift: 0;
+      left: auto;
+      right: var(--layout-margin);
+    }
+  }
+  .pill__links {
+    position: relative;
+    display: flex;
+    gap: var(--space-4);
+  }
+  .pill__link {
+    position: relative;
+    z-index: 1;
+    display: inline-grid;
+    padding: var(--space-12) var(--space-20);
+    border-radius: var(--radius-full);
+    color: var(--color-text-nav);
+    transition:
+      color var(--duration-base) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+  /* Reserve the semibold width so text doesn't shift when it becomes active */
+  .pill__link::after {
+    content: attr(data-label);
+    height: 0;
+    font-weight: 600;
+    visibility: hidden;
+    overflow: hidden;
+  }
+  .pill__link:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-subtle);
+  }
+  .pill__link.is-active {
+    color: var(--color-accent-text);
+    font-weight: 600;
+    background: transparent;
+  }
+  /* Without JS the active link carries its own tint */
+  :global(html:not(.js)) .pill__link.is-active {
+    background: var(--color-accent-subtle);
+  }
+  .pill__indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--w, 0px);
+    border-radius: var(--radius-full);
+    background: var(--color-accent-subtle);
+    transform: translateX(var(--x, 0px));
+    opacity: var(--o, 0);
+    transition:
+      transform 420ms var(--ease-spring),
+      width 420ms var(--ease-spring),
+      opacity var(--duration-base) var(--ease-out);
+  }
+  @media (max-width: 767px) {
+    .pill {
+      display: none;
+    }
+  }
+</style>
