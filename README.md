@@ -50,3 +50,9 @@ Hero entrance stagger, scroll reveals (only for content below the fold), sliding
 Every project uses one template (Figma page "Case Study" components + `nutu · Desktop 1440` / `nutu · Mobile 390` frames):
 header (back link, eyebrow, title, lead, meta) → tinted cover → chapters of `CaseSection` (split ≥1024, stacked below), `CaseScreens` rows and `CaseCallout` → next project.
 Content lives in `src/data/cases/<slug>.ts`; projects without a file render a short placeholder.
+
+## Sharing & SEO
+`public/og.png` (1200×630) is the link preview, plus `robots.txt`, a generated `/sitemap.xml` and an Apple touch icon.
+
+## Deploy
+Vercel (static Astro build, `npm run build` → `dist/`). Domain: rgomezdesign.com.
