@@ -31,7 +31,7 @@ const START = 12;
           <div class="gauge" aria-hidden="true">
             <span class="gauge__arc"></span>
             <span class="gauge__cap gauge__cap--l"></span><span class="gauge__cap gauge__cap--r"></span>
-            <span class="gauge__pointer" data-pointer><i></i></span>
+            <span class="gauge__pointer" data-pointer><svg viewBox="0 0 12 11"><path d="M6 1.6 10.6 9.4H1.4Z" /></svg></span>
             <span class="gauge__face"><span class="gauge__sign" data-sign>+</span><span data-value>{START}</span></span>
           </div>
 
@@ -237,16 +237,23 @@ const START = 12;
     transform: rotate(var(--a, 14.2deg));
     transition: transform 420ms var(--ease-spring);
   }
-  .gauge__pointer i {
+  /* Rounded triangle (r≈2) sitting on the face edge, tip toward the arc: r 50 → 61 */
+  .gauge__pointer svg {
     position: absolute;
     top: 18px;
-    left: 72.5px;
-    width: 13px;
-    height: 19px;
-    background: var(--zone-ink);
-    clip-path: polygon(50% 0, 100% 100%, 0 100%);
-    border-radius: 2px;
-    transition: background-color var(--duration-base) var(--ease-out);
+    left: 73px;
+    width: 12px;
+    height: 11px;
+    overflow: visible;
+  }
+  .gauge__pointer path {
+    fill: var(--zone-ink);
+    stroke: var(--zone-ink);
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+    transition:
+      fill var(--duration-base) var(--ease-out),
+      stroke var(--duration-base) var(--ease-out);
   }
   .gauge__face {
     position: absolute;
