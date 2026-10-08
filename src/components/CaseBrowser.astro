@@ -67,8 +67,10 @@ const { shot, url, phone, caption, tint, size = 'default', eager = false } = Ast
     border-radius: var(--radius-md);
   }
   .browser__bar {
+    position: relative;
     display: flex;
     align-items: center;
+    min-height: 44px;
     gap: var(--space-16);
     padding: var(--space-10) var(--space-14);
     background: var(--color-bg-subtle);
@@ -83,9 +85,12 @@ const { shot, url, phone, caption, tint, size = 'default', eager = false } = Ast
     border-radius: 50%;
     background: var(--color-border-strong);
   }
+  /* True center of the bar, independent of the dots on the left */
   .browser__url {
-    flex: 0 1 280px;
-    margin-inline: auto;
+    position: absolute;
+    left: 50%;
+    width: min(280px, calc(100% - 120px));
+    translate: -50% 0;
     padding: 2px var(--space-12);
     border-radius: var(--radius-full);
     background: var(--color-bg-surface);
@@ -94,9 +99,6 @@ const { shot, url, phone, caption, tint, size = 'default', eager = false } = Ast
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  .web--with-phone .browser__url {
-    margin-right: 56px;
   }
   .browser__shot {
     display: block;

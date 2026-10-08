@@ -56,7 +56,8 @@ export const palazzo: CaseStudy = {
         kicker: '01 · Structure',
         title: 'Built around what clients ask',
         body: [
-          'I started from the questions clients actually ask the front desk: what do you offer, how much is it, who are your stylists, where are you. Each one became a page, and the menu reads in that order. On a phone the menu opens to the same short list in big, easy-to-tap type.',
+          'I worked with the owners to pin down what the site needed to do for them and for their clients: show off the team and the space, keep services and prices easy to update, and point people to a call or email when they’re ready.',
+          'From there I built the structure around the questions clients actually ask the front desk: what do you offer, how much is it, who are your stylists, where are you. Each one became a page, and the menu reads in that order. On a phone it opens to the same short list in big, easy-to-tap type.',
         ],
       },
       {

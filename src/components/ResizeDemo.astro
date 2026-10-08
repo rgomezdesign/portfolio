@@ -113,6 +113,7 @@ const { caption, url, shots, tint } = Astro.props;
     transition: height 520ms var(--ease-spring);
   }
   .window__bar {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-12);
@@ -132,9 +133,10 @@ const { caption, url, shots, tint } = Astro.props;
     background: var(--color-border-strong);
   }
   .window__url {
-    flex: 0 1 260px;
-    min-width: 0;
-    margin-inline: auto;
+    position: absolute;
+    left: 50%;
+    width: min(260px, calc(100% - 180px));
+    translate: -50% 0;
     padding: 2px var(--space-12);
     border-radius: var(--radius-full);
     background: var(--color-bg-surface);
@@ -146,6 +148,7 @@ const { caption, url, shots, tint } = Astro.props;
   }
   .window__width {
     flex: none;
+    margin-left: auto;
     color: var(--color-text-tertiary);
     font-variant-numeric: tabular-nums;
   }
