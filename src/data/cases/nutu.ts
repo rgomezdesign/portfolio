@@ -126,7 +126,7 @@ export const nutu: CaseStudy = {
       {
         type: 'balance-demo',
         screens: { good: s.sliderResult, off: s.sliderDragged },
-        caption: 'A working sketch of the control. The photo switches to the other future when you leave the green.',
+        caption: 'Recreated from the Future You screen. The gauge and slider are live; zone cutoffs are approximate for the demo.',
       },
     ],
     [

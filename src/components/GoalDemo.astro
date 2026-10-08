@@ -1,6 +1,7 @@
 ---
-// Mirrors Figma "Demo/Goal Tracker" inside the tinted demo panel.
-// A working recreation of the Goals decision: progress counts completions, not calendar days.
+// Two separate things, on purpose:
+// 1. Figma "Demo/Goal Tracker" — a faithful, working recreation of the Goals detail screen (app UI).
+// 2. Figma "Demo/Count Compare" — a portfolio annotation (not app UI) that explains the decision.
 interface Props {
   statement: string;
   support: string;
@@ -11,77 +12,89 @@ const weeks = [
   [true, true, true],
   [true, false, false],
 ];
-const RING = 2 * Math.PI * 12; // r = 12
+const RING = 2 * Math.PI * 17; // r = 17 in a 40px ring
 ---
-<div class="demo" style={`--tint:${tint}`} data-reveal>
+<div class="demo" style={`--tint:${tint}`} data-reveal data-goal-demo data-target="6">
   <div class="demo__text">
     <blockquote class="callout">
       <p class="t-h2">{statement}</p>
       <p class="t-body">{support}</p>
     </blockquote>
+
+    <div class="compare" aria-label="How progress is counted">
+      <p class="compare__title t-caption">How the same week reads</p>
+      <div class="compare__row">
+        <p class="compare__label"><span class="t-label-strong">Completions</span><span class="t-caption"><span data-goal-count>4</span> of 6 · <span data-goal-pct="6">67</span>%</span></p>
+        <span class="compare__track"><span class="compare__bar compare__bar--on" data-goal-bar="6" style="--w:66.67%"></span></span>
+      </div>
+      <div class="compare__row">
+        <p class="compare__label"><span class="t-label">Calendar days</span><span class="t-caption"><span data-goal-count>4</span> of 14 · <span data-goal-pct="14">29</span>%</span></p>
+        <span class="compare__track"><span class="compare__bar" data-goal-bar="14" style="--w:28.57%"></span></span>
+      </div>
+    </div>
+
     <p class="demo__try t-label-strong">Try it: tap a day <span class="demo__try-arrow" aria-hidden="true">→</span></p>
   </div>
 
-  <div class="goal" data-goal-demo data-target="6">
-    <div class="goal__head">
-      <p class="t-caption">Exercise</p>
-      <p class="goal__sentence t-label">I will choose a new physical activity and do 10 min, 3 times a week, for 2 weeks.</p>
-    </div>
+  <figure class="replica">
+    <div class="app" data-goal-card>
+      <div class="app__summary">
+        <p class="app__category">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="9.5" cy="2.6" r="1.4" /><path d="M7.4 5.2 5 6.6l-.9 2.3M7.4 5.2l2.4 1.4 1.6 2M7.4 5.2 6.6 9l2.2 1.6.6 3.4M6.6 9l-1.4 2.6-2.6.6" /></svg>
+          Exercise
+        </p>
+        <p class="app__goal">I will choose a new physical activity and do 10 min, 3 times a week, for 2 weeks.</p>
+      </div>
 
-    <div class="goal__progress">
-      <svg class="goal__ring" viewBox="0 0 28 28" aria-hidden="true">
-        <circle cx="14" cy="14" r="12" class="goal__ring-track" />
-        <circle cx="14" cy="14" r="12" class="goal__ring-fill" style={`--c:${RING}`} data-goal-ring />
-      </svg>
-      <p class="t-h3" aria-live="polite"><span data-goal-count>4</span> of 6</p>
-      <p class="goal__hint t-caption" data-goal-hint>Tap a day</p>
-      <p class="goal__done t-label-strong" aria-hidden="true"><span class="goal__check">✓</span> Goal complete</p>
-      <span class="confetti" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i style={`--k:${i}`}></i>)}</span>
-    </div>
-
-    <div class="goal__weeks">
-      {weeks.map((days, w) => (
-        <div class="goal__week">
-          <p class="t-caption">Week {w + 1}</p>
-          <div class="goal__slots">
-            {days.map((on, d) => (
-              <button type="button" class="slot t-label" aria-pressed={on ? 'true' : 'false'} aria-label={`Week ${w + 1}, day ${d + 1}`} data-goal-slot>
-                <span>{d + 1}</span>
-              </button>
-            ))}
-          </div>
+      <div class="app__progress">
+        <div class="app__head">
+          <svg class="ring" viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="17" class="ring__track" />
+            <circle cx="20" cy="20" r="17" class="ring__fill" style={`--c:${RING}`} data-goal-ring />
+          </svg>
+          <p class="app__count" aria-live="polite"><span data-goal-count>4</span> of 6</p>
+          <p class="app__left">3 days left</p>
+          <p class="app__done" aria-hidden="true">Goal complete</p>
         </div>
-      ))}
-    </div>
 
-    <div class="goal__compare">
-      <div class="meter">
-        <p class="meter__row"><span class="t-caption">Counting completions</span><span class="t-label-strong"><span data-goal-count>4</span> of 6</span></p>
-        <span class="meter__track"><span class="meter__bar meter__bar--good" data-goal-bar="6" style="--w:66.67%"></span></span>
-      </div>
-      <div class="meter">
-        <p class="meter__row"><span class="t-caption">Counting calendar days</span><span class="t-label-strong"><span data-goal-count>4</span> of 14</span></p>
-        <span class="meter__track"><span class="meter__bar" data-goal-bar="14" style="--w:28.57%"></span></span>
-      </div>
-    </div>
+        {weeks.map((days, w) => (
+          <div class="app__week">
+            <p class="app__week-label">Week {w + 1}</p>
+            <div class="app__slots">
+              {days.map((on, d) => (
+                <button type="button" class="slot" aria-pressed={on ? 'true' : 'false'} aria-label={`Week ${w + 1}, completion ${d + 1}`} data-goal-slot>
+                  <span>{d + 1}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
 
-  </div>
+        <p class="app__tag">
+          Manual
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3" /><path d="M8 7.2v4M8 4.9v.1" /></svg>
+        </p>
+      </div>
+      <span class="confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <i style={`--k:${i}`}></i>)}</span>
+    </div>
+    <figcaption class="t-caption">Recreated from the Goals screen</figcaption>
+  </figure>
 </div>
 
 <style>
   .demo {
     display: grid;
-    grid-template-columns: minmax(0, 420px) minmax(0, 520px);
+    grid-template-columns: minmax(0, 420px) minmax(0, 375px);
     justify-content: center;
     align-items: center;
-    gap: var(--space-64);
+    gap: var(--space-80);
     padding: var(--space-64);
     border-radius: var(--radius-lg);
     background: var(--tint);
   }
   .demo__text {
     display: grid;
-    gap: var(--space-24);
+    gap: var(--space-32);
   }
   .callout {
     display: grid;
@@ -108,70 +121,191 @@ const RING = 2 * Math.PI * 12; // r = 12
     }
   }
 
-  /* Card */
-  .goal {
-    position: relative;
+  /* Portfolio annotation (not app UI): plain, monochrome, sits with the text */
+  .compare {
     display: grid;
-    gap: var(--space-20);
-    padding: var(--space-24);
-    border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg-surface);
-    box-shadow: var(--shadow-media);
-    transition: box-shadow var(--duration-slow) var(--ease-out);
+    gap: var(--space-12);
+    padding-top: var(--space-20);
+    border-top: 1px solid rgb(17 17 16 / 0.12);
   }
-  .goal__head {
+  .compare__title {
+    color: var(--color-text-secondary);
+  }
+  .compare__row {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
-  .goal__progress {
+  .compare__label {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     gap: var(--space-12);
   }
-  .goal__hint {
-    margin-left: auto;
+  .compare__label .t-caption {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
   }
-  .goal__ring {
-    width: 28px;
-    height: 28px;
+  .compare__track {
+    display: block;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: rgb(17 17 16 / 0.1);
+  }
+  .compare__bar {
+    display: block;
+    width: var(--w, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-text-tertiary);
+    transition: width var(--duration-slow) var(--ease-out);
+  }
+  .compare__bar--on {
+    background: var(--color-text-primary);
+  }
+
+  /* Faithful recreation of the app screen section (values from the Goals Figma file) */
+  .replica {
+    display: grid;
+    gap: var(--space-12);
+    margin: 0;
+  }
+  .replica figcaption {
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+  .app {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border-default);
+    border-radius: 24px;
+    background: var(--color-demo-nutu-surface);
+    box-shadow: var(--shadow-media);
+    color: var(--color-demo-nutu-ink);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .app p {
+    margin: 0;
+  }
+  .app__summary {
+    display: grid;
+    gap: 8px;
+    padding: 20px 16px 16px;
+  }
+  .app__category {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-demo-nutu-muted);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .app__category svg,
+  .app__tag svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .app__category svg circle {
+    fill: currentColor;
+    stroke: none;
+  }
+  .app__goal {
+    font-weight: 500;
+  }
+  .app__progress {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+  }
+  .app__head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+  .ring {
+    width: 40px;
+    height: 40px;
     rotate: -90deg;
   }
-  .goal__ring circle {
+  .ring circle {
     fill: none;
-    stroke-width: 4;
+    stroke-width: 5;
   }
-  .goal__ring-track {
-    stroke: var(--color-border-default);
+  .ring__track {
+    stroke: var(--color-demo-nutu-track);
+    opacity: 0.6;
   }
-  .goal__ring-fill {
+  .ring__fill {
     stroke: var(--color-demo-nutu-primary);
-    stroke-linecap: round;
     stroke-dasharray: var(--c);
     stroke-dashoffset: calc(var(--c) * (1 - var(--p, 0.6667)));
     transition: stroke-dashoffset var(--duration-slow) var(--ease-spring);
   }
-  .goal__weeks {
-    display: grid;
-    gap: var(--space-12);
+  .app__count {
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
-  .goal__week {
-    display: grid;
-    gap: var(--space-8);
+  .app__left {
+    margin-left: auto !important;
+    color: var(--color-demo-nutu-muted);
+    font-size: 12px;
   }
-  .goal__slots {
+  .app__done {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -14px !important;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--color-demo-nutu-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-slow) var(--ease-spring);
+  }
+  .is-complete .app__done {
+    opacity: 1;
+    transform: none;
+  }
+  .is-complete .app__left {
+    visibility: hidden;
+  }
+  .app__week {
+    display: grid;
+    gap: 4px;
+  }
+  .app__week-label {
+    color: var(--color-demo-nutu-muted);
+    font-size: 12px;
+  }
+  .app__slots {
     display: flex;
-    gap: var(--space-8);
+    gap: 8px;
   }
   .slot {
     display: grid;
     place-items: center;
     width: 44px;
     height: 44px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-surface);
-    color: var(--color-text-secondary);
+    padding: 0;
+    border: 1px solid var(--color-demo-nutu-line);
+    border-radius: 8px;
+    background: var(--color-demo-nutu-surface);
+    color: var(--color-demo-nutu-ink);
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     transition:
       background-color var(--duration-base) var(--ease-out),
@@ -188,7 +322,7 @@ const RING = 2 * Math.PI * 12; // r = 12
   .slot[aria-pressed='true'] {
     border-color: var(--color-demo-nutu-primary);
     background: var(--color-demo-nutu-primary);
-    color: var(--color-text-inverse);
+    color: #fff;
   }
   .slot[aria-pressed='true'] span {
     animation: pop 360ms var(--ease-spring);
@@ -198,88 +332,23 @@ const RING = 2 * Math.PI * 12; // r = 12
       transform: scale(0.6);
     }
   }
-
-  .goal__compare {
-    display: grid;
-    gap: var(--space-12);
-    padding-top: var(--space-20);
-    border-top: 1px solid var(--color-border-default);
-  }
-  .meter {
-    display: grid;
-    gap: var(--space-8);
-  }
-  .meter__row {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-12);
-  }
-  .meter__row .t-caption {
-    color: var(--color-text-secondary);
-  }
-  .meter__track {
-    display: block;
-    height: 6px;
-    overflow: hidden;
-    border-radius: var(--radius-full);
-    background: var(--color-bg-subtle);
-  }
-  .meter__bar {
-    display: block;
-    width: var(--w, 0%);
-    height: 100%;
-    border-radius: inherit;
-    background: var(--color-border-strong);
-    transition: width var(--duration-slow) var(--ease-out);
-  }
-  .meter__bar--good {
-    background: var(--color-demo-nutu-primary);
-  }
-
-  /* Completion moment */
-  .goal__progress {
-    position: relative;
-  }
-  .goal__done {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    margin-top: -15px;
-    display: flex;
+  .app__tag {
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-6);
-    padding: var(--space-4) var(--space-12) var(--space-4) var(--space-4);
-    border-radius: var(--radius-full);
-    background: var(--color-demo-nutu-primary);
-    color: var(--color-text-inverse);
-    opacity: 0;
-    transform: translateY(-6px) scale(0.9);
-    pointer-events: none;
-    transition:
-      opacity var(--duration-base) var(--ease-out),
-      transform var(--duration-slow) var(--ease-spring);
-  }
-  .goal__check {
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.18);
+    justify-self: start;
+    gap: 6px;
+    margin-top: 4px !important;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--color-demo-nutu-surface);
     font-size: 12px;
+    font-weight: 500;
   }
-  .goal.is-complete .goal__done {
-    opacity: 1;
-    transform: none;
-  }
-  .goal.is-complete .goal__hint {
-    visibility: hidden;
-  }
+
   .confetti {
     position: absolute;
-    top: 50%;
-    right: 64px;
-    width: 0;
+    top: 150px;
+    right: 70px;
     pointer-events: none;
   }
   .confetti i {
@@ -294,11 +363,11 @@ const RING = 2 * Math.PI * 12; // r = 12
     background: var(--color-demo-nutu-primary);
   }
   .confetti i:nth-child(3n + 1) {
-    background: var(--color-accent-brand);
+    background: var(--color-demo-zone-off);
   }
-  .goal.is-celebrating .confetti i {
+  .is-celebrating .confetti i {
     animation: burst 900ms var(--ease-out) both;
-    animation-delay: calc(var(--k) * 18ms);
+    animation-delay: calc(var(--k) * 16ms);
   }
   @keyframes burst {
     0% {
@@ -307,14 +376,14 @@ const RING = 2 * Math.PI * 12; // r = 12
     }
     100% {
       opacity: 0;
-      transform: translate(calc((var(--k) - 4.5) * 14px), calc(-40px + var(--k) * 9px)) rotate(calc(var(--k) * 70deg));
+      transform: translate(calc((var(--k) - 5.5) * 13px), calc(-46px + var(--k) * 8px)) rotate(calc(var(--k) * 70deg));
     }
   }
 
   @media (max-width: 1023px) {
     .demo {
-      grid-template-columns: minmax(0, 520px);
-      gap: var(--space-32);
+      grid-template-columns: minmax(0, 420px);
+      gap: var(--space-40);
       padding: var(--space-48) var(--space-24);
     }
   }
@@ -324,34 +393,48 @@ const RING = 2 * Math.PI * 12; // r = 12
       padding: var(--space-32) var(--space-16);
       border-radius: var(--radius-md);
     }
+    /* Mobile order: statement → try it → app → how it counts */
+    .demo__text {
+      display: contents;
+    }
+    .callout {
+      order: 1;
+    }
+    .demo__try {
+      order: 2;
+    }
     .demo__try-arrow {
       rotate: 90deg;
     }
-    .goal {
-      padding: var(--space-20);
+    .replica {
+      order: 3;
+    }
+    .compare {
+      order: 4;
     }
   }
 </style>
 
 <script>
-  for (const card of document.querySelectorAll<HTMLElement>('[data-goal-demo]')) {
-    const target = Number(card.dataset.target);
-    const slots = [...card.querySelectorAll<HTMLButtonElement>('[data-goal-slot]')];
-    const counts = card.querySelectorAll<HTMLElement>('[data-goal-count]');
-    const ring = card.querySelector<SVGElement>('[data-goal-ring]');
-    const bars = card.querySelectorAll<HTMLElement>('[data-goal-bar]');
-    const hint = card.querySelector<HTMLElement>('[data-goal-hint]');
+  for (const root of document.querySelectorAll<HTMLElement>('[data-goal-demo]')) {
+    const target = Number(root.dataset.target);
+    const card = root.querySelector<HTMLElement>('[data-goal-card]');
+    const slots = [...root.querySelectorAll<HTMLButtonElement>('[data-goal-slot]')];
+    const counts = root.querySelectorAll<HTMLElement>('[data-goal-count]');
+    const pcts = root.querySelectorAll<HTMLElement>('[data-goal-pct]');
+    const ring = root.querySelector<SVGElement>('[data-goal-ring]');
+    const bars = root.querySelectorAll<HTMLElement>('[data-goal-bar]');
     let wasComplete = false;
 
     const render = () => {
       const done = slots.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
       counts.forEach((c) => (c.textContent = String(done)));
+      pcts.forEach((p) => (p.textContent = String(Math.round((done / Number(p.dataset.goalPct)) * 100))));
       ring?.style.setProperty('--p', String(done / target));
       bars.forEach((b) => b.style.setProperty('--w', `${(done / Number(b.dataset.goalBar)) * 100}%`));
-      if (hint) hint.textContent = done === 0 ? 'Tap a day' : `${target - done} to go`;
       const complete = done === target;
-      card.classList.toggle('is-complete', complete);
-      if (complete && !wasComplete) {
+      card?.classList.toggle('is-complete', complete);
+      if (card && complete && !wasComplete) {
         card.classList.remove('is-celebrating');
         void card.offsetWidth; // restart the burst
         card.classList.add('is-celebrating');

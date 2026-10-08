@@ -1,8 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import type { Screen } from '../data/cases/types';
-// Mirrors Figma "Demo/Balance" next to a Case/Screen inside the tinted demo panel.
-// A working sketch of the Future You control: gauge + slider, photo swaps when you leave the green.
+// Mirrors Figma "Demo/Balance": the real Future You screen with its gauge + slider card made live.
+// The card and the right photo's zone tag/border are drawn at app scale (375 wide, values from the
+// Future You Figma file) and laid exactly over the screenshot, then scaled with the phone.
 interface Props {
   caption: string;
   screens: { good: Screen; off: Screen };
@@ -13,47 +14,45 @@ const START = 12;
 ---
 <figure class="balance" data-reveal>
   <div class="balance__panel" style={`--tint:${tint}`} data-balance-demo>
-    <div class="balance__phone">
-      <Image src={screens.good.src} alt={screens.good.alt} widths={[300, 600]} sizes="(max-width: 767px) 196px, 280px" class="balance__shot" loading="lazy" />
-      <Image src={screens.off.src} alt={screens.off.alt} widths={[300, 600]} sizes="(max-width: 767px) 196px, 280px" class="balance__shot balance__shot--off" loading="lazy" />
+    <div class="phone">
+      <Image src={screens.good.src} alt={screens.good.alt} widths={[400, 750]} sizes="(max-width: 767px) 300px, 340px" class="phone__shot" loading="lazy" />
+      <Image src={screens.off.src} alt={screens.off.alt} widths={[400, 750]} sizes="(max-width: 767px) 300px, 340px" class="phone__shot phone__shot--off" loading="lazy" />
+
+      <div class="app" aria-label="Future You gauge and slider (interactive)">
+        <span class="app__frame" aria-hidden="true"></span>
+        <span class="app__tag" aria-hidden="true" data-zone>Green zone</span>
+
+        <div class="card">
+          <div class="card__head">
+            <p>If you consistently stay here</p>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.6" /><path d="M10 9v4.6M10 6.3v.2" /></svg>
+          </div>
+
+          <div class="gauge" aria-hidden="true">
+            <span class="gauge__arc"></span>
+            <span class="gauge__pointer" data-pointer><i></i></span>
+            <span class="gauge__face"><span class="gauge__sign" data-sign>+</span><span data-value>{START}</span></span>
+          </div>
+
+          <label class="slider">
+            <span class="visually-hidden">If you consistently stay here, daily balance from −100 to +100</span>
+            <input type="range" min="-100" max="100" step="1" value={START} data-slider />
+          </label>
+          <div class="axis" aria-hidden="true">
+            <span>-100</span><span class="axis__zero">0</span><span>+100</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="balance__control">
-      <p class="balance__try t-label-strong">Try it: drag the slider <span aria-hidden="true">↓</span></p>
-      <div class="card">
-        <div class="card__head">
-          <p class="t-label">If you consistently stay here</p>
-          <p class="zone t-caption" data-zone>Balanced</p>
-        </div>
-
-        <div class="gauge" aria-hidden="true">
-          <svg viewBox="0 0 220 120">
-            <defs>
-              <linearGradient id="balance-arc" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="var(--color-demo-zone-off)" />
-                <stop offset="0.3" stop-color="var(--color-demo-zone-mid)" />
-                <stop offset="0.5" stop-color="var(--color-demo-zone-good)" />
-                <stop offset="0.7" stop-color="var(--color-demo-zone-mid)" />
-                <stop offset="1" stop-color="var(--color-demo-zone-off)" />
-              </linearGradient>
-            </defs>
-            <path d="M 10 110 A 100 100 0 0 1 210 110" class="gauge__arc" />
-            <circle r="8" class="gauge__marker" data-marker />
-          </svg>
-          <p class="gauge__value" data-value>+{START}</p>
-        </div>
-
-        <label class="slider">
-          <span class="visually-hidden">Daily balance, from −100 (more burned) to +100 (more eaten)</span>
-          <input type="range" min="-100" max="100" step="1" value={START} data-slider />
-        </label>
-        <div class="slider__labels t-caption" aria-hidden="true">
-          <span>−100<br /><small>more burned</small></span>
-          <span>0</span>
-          <span>+100<br /><small>more eaten</small></span>
-        </div>
-        <p class="card__note t-caption">Anywhere in the green gives the same future. Drift either way and the picture changes.</p>
-      </div>
+    <div class="side">
+      <p class="side__try t-label-strong"><span class="side__arrow" aria-hidden="true">←</span> Try it: drag the slider</p>
+      <p class="t-body">Anywhere in the green gives the same future. Drift into yellow or orange, in either direction, and the picture changes with you.</p>
+      <ul class="legend t-caption" aria-label="Zones">
+        <li><i style="--c:var(--color-demo-zone-good)"></i>Green: a balanced day</li>
+        <li><i style="--c:var(--color-demo-zone-mid)"></i>Yellow: drifting</li>
+        <li><i style="--c:var(--color-demo-zone-off)"></i>Orange: well off balance</li>
+      </ul>
     </div>
   </div>
   <figcaption class="t-caption">{caption}</figcaption>
@@ -66,203 +65,332 @@ const START = 12;
     margin: 0;
   }
   .balance__panel {
+    --phone: 340px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--space-64);
+    gap: var(--space-80);
     padding: var(--space-64);
     border-radius: var(--radius-lg);
     background: var(--tint);
   }
-  .balance__phone {
+
+  /* Phone: screenshot + live overlay at app scale (375 × 812) */
+  .phone {
     position: relative;
-    flex: 0 1 280px;
-    min-width: 0;
-    container-type: inline-size;
-  }
-  .balance__shot {
-    display: block;
-    width: 100%;
-    height: auto;
+    flex: none;
+    width: var(--phone);
     aspect-ratio: 375 / 812;
+    overflow: hidden;
     border: 1px solid var(--color-border-default);
-    border-radius: 10cqw;
+    border-radius: calc(var(--phone) * 0.1);
     box-shadow: var(--shadow-media);
-    transition: opacity var(--duration-slow) var(--ease-out);
+    background: var(--color-demo-nutu-surface);
   }
-  .balance__shot--off {
+  .phone__shot {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .phone__shot--off {
     opacity: 0;
   }
-  .is-off .balance__shot--off {
+  .is-changed .phone__shot--off {
     opacity: 1;
   }
 
-  .balance__control {
-    flex: 0 1 440px;
-    display: grid;
-    gap: var(--space-24);
+  .app {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 375px;
+    height: 812px;
+    transform: scale(var(--s, 0.9067));
+    transform-origin: 0 0;
+    color: var(--color-demo-nutu-ink);
+    font-size: 12px;
+    line-height: 1.33;
   }
-  .balance__try {
-    color: var(--color-accent-text);
+  .app p {
+    margin: 0;
   }
+  /* Right photo: zone border + tag (covers the ones baked into the screenshot) */
+  .app__frame {
+    position: absolute;
+    top: 176px;
+    left: 193px;
+    width: 166px;
+    height: 240px;
+    border: 2px solid var(--zone);
+    border-radius: 8px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .app__tag {
+    position: absolute;
+    top: 166px;
+    left: 205px;
+    min-width: 92px;
+    height: 20px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--zone);
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color var(--duration-base) var(--ease-out);
+  }
+  .is-mid .app__tag {
+    color: var(--color-demo-nutu-ink);
+  }
+
+  /* "Gauge + Slider" card: 343 × 255 at (16, 432) */
   .card {
-    display: grid;
-    gap: var(--space-16);
-    padding: var(--space-24);
-    border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg-surface);
-    box-shadow: var(--shadow-media);
+    position: absolute;
+    top: 432px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    width: 343px;
+    height: 255px;
+    padding: 16px;
+    border: 0.5px solid var(--color-demo-nutu-line);
+    border-radius: 8px;
+    background: #fff;
   }
   .card__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-12);
-  }
-  .zone {
-    flex: none;
-    white-space: nowrap;
-    padding: var(--space-4) var(--space-10);
-    border-radius: var(--radius-full);
-    background: var(--zone, var(--color-demo-zone-good));
-    color: var(--color-text-inverse);
+    height: 20px;
+    font-size: 14px;
     font-weight: 500;
-    transition: background-color var(--duration-base) var(--ease-out);
   }
-  .is-mid .zone {
-    color: var(--color-text-primary);
+  .card__head svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #434343;
+    stroke-width: 1.5;
+    stroke-linecap: round;
   }
 
   .gauge {
     position: relative;
-    width: 220px;
-    max-width: 100%;
-    justify-self: center;
-  }
-  .gauge svg {
-    display: block;
-    width: 100%;
-    overflow: visible;
+    width: 158px;
+    height: 141px;
+    margin: 10px auto 0;
   }
   .gauge__arc {
-    fill: none;
-    stroke: url(#balance-arc);
-    stroke-width: 18;
-    stroke-linecap: butt;
-  }
-  .gauge__marker {
-    fill: var(--color-bg-surface);
-    stroke: var(--color-text-primary);
-    stroke-width: 2;
-  }
-  .gauge__value {
     position: absolute;
-    left: 50%;
-    bottom: 4px;
-    translate: -50% 0;
-    color: var(--zone, var(--color-demo-zone-good));
-    font-size: 40px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    inset: 0 0 auto;
+    height: 158px;
+    background: conic-gradient(
+      from -122deg,
+      var(--color-demo-zone-off) 0deg 34deg,
+      var(--color-demo-zone-mid) 62deg 76deg,
+      var(--color-demo-zone-good) 98deg 146deg,
+      var(--color-demo-zone-mid) 168deg 182deg,
+      var(--color-demo-zone-off) 210deg 244deg,
+      transparent 244deg
+    );
+    -webkit-mask: radial-gradient(circle, transparent 65.5px, #000 66px 79px, transparent 79.5px);
+    mask: radial-gradient(circle, transparent 65.5px, #000 66px 79px, transparent 79.5px);
+  }
+  .gauge__pointer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 158px;
+    height: 158px;
+    transform: rotate(var(--a, 14.6deg));
+    transition: transform 420ms var(--ease-spring);
+  }
+  .gauge__pointer i {
+    position: absolute;
+    top: 17px;
+    left: 72.5px;
+    width: 13px;
+    height: 19px;
+    background: var(--zone-ink);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    border-radius: 2px;
+    transition: background-color var(--duration-base) var(--ease-out);
+  }
+  .gauge__face {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 98px;
+    height: 98px;
+    border: 0.93px solid var(--zone-ink);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--zone-text);
+    font-size: 32.7px;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
-    transition: color var(--duration-base) var(--ease-out);
+    letter-spacing: -0.02em;
+    transition:
+      color var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out);
+  }
+  .gauge__sign {
+    margin-right: 2px;
+    font-size: 16px;
+    font-weight: 600;
   }
 
-  /* Slider */
+  /* Slider: 6px track #D3D596, 24px thumb with 3px #496257 ring */
+  .slider {
+    display: block;
+    margin-top: auto;
+  }
   .slider input {
+    display: block;
     width: 100%;
-    height: 44px;
+    height: 26px;
     margin: 0;
     background: transparent;
-    cursor: pointer;
+    cursor: grab;
     -webkit-appearance: none;
     appearance: none;
+    touch-action: pan-y;
+  }
+  .slider input:active {
+    cursor: grabbing;
   }
   .slider input::-webkit-slider-runnable-track {
-    height: 4px;
-    border-radius: 2px;
-    background: var(--color-bg-subtle);
-    box-shadow: inset 0 0 0 1px var(--color-border-default);
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-demo-nutu-track);
   }
   .slider input::-moz-range-track {
-    height: 4px;
-    border-radius: 2px;
-    background: var(--color-bg-subtle);
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-demo-nutu-track);
   }
   .slider input::-webkit-slider-thumb {
-    width: 26px;
-    height: 26px;
-    margin-top: -11px;
-    border: 2px solid var(--color-text-primary);
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    margin-top: -9px;
+    border: 3px solid var(--color-demo-nutu-primary);
     border-radius: 50%;
-    background: var(--color-bg-surface);
-    box-shadow: var(--shadow-media);
+    background: #fff;
     -webkit-appearance: none;
     appearance: none;
     transition: transform var(--duration-base) var(--ease-spring);
   }
   .slider input::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    border: 2px solid var(--color-text-primary);
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color-demo-nutu-primary);
     border-radius: 50%;
-    background: var(--color-bg-surface);
+    background: #fff;
   }
   .slider input:active::-webkit-slider-thumb {
-    transform: scale(1.12);
+    transform: scale(1.15);
   }
   .slider input:focus-visible {
     outline: none;
   }
   .slider input:focus-visible::-webkit-slider-thumb {
-    outline: 2px solid var(--color-focus-ring);
-    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgb(222 110 33 / 0.45);
   }
-  .slider__labels {
+  .axis {
     display: flex;
     justify-content: space-between;
-    margin-top: calc(var(--space-8) * -1);
-    line-height: 1.3;
+    color: var(--color-demo-nutu-muted);
   }
-  .slider__labels span:last-child {
-    text-align: right;
+  .axis__zero {
+    color: var(--color-demo-nutu-ink);
+    font-weight: 500;
   }
-  .slider__labels small {
-    font-size: inherit;
-    color: var(--color-text-tertiary);
+
+  /* Zone colors */
+  [data-balance-demo] {
+    --zone: var(--color-demo-zone-good);
+    --zone-ink: var(--color-demo-zone-good-ink);
+    --zone-text: var(--color-demo-zone-good);
   }
-  .card__note {
+  .is-mid {
+    --zone: var(--color-demo-zone-mid);
+    --zone-ink: #b39a12;
+    --zone-text: #b39a12;
+  }
+  .is-off {
+    --zone: var(--color-demo-zone-off);
+    --zone-ink: var(--color-demo-zone-off);
+    --zone-text: var(--color-demo-zone-off);
+  }
+
+  /* Portfolio annotation beside the phone */
+  .side {
+    flex: 0 1 340px;
+    display: grid;
+    gap: var(--space-16);
+  }
+  .side__try {
+    color: var(--color-accent-text);
+  }
+  .side__arrow {
+    display: inline-block;
+    animation: nudge-left 1.6s var(--ease-out) infinite;
+  }
+  @keyframes nudge-left {
+    0%,
+    60%,
+    100% {
+      transform: translateX(0);
+    }
+    30% {
+      transform: translateX(-4px);
+    }
+  }
+  .legend {
+    display: grid;
+    gap: var(--space-6);
     color: var(--color-text-secondary);
-    text-align: center;
-    text-wrap: pretty;
+  }
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  .legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c);
   }
 
   @media (max-width: 1023px) {
     .balance__panel {
-      gap: var(--space-32);
+      gap: var(--space-40);
       padding: var(--space-48) var(--space-24);
     }
   }
   @media (max-width: 767px) {
     .balance__panel {
+      --phone: min(300px, calc(100vw - 72px));
+      --s: 0.8;
       flex-direction: column;
       gap: var(--space-24);
       padding: var(--space-32) var(--space-16);
       border-radius: var(--radius-md);
     }
-    .balance__phone {
+    .side {
       flex: none;
-      width: 196px;
+      order: -1;
     }
-    .balance__control {
-      flex: none;
-      width: 100%;
-    }
-    .card {
-      padding: var(--space-20);
+    .side__arrow {
+      rotate: -90deg;
     }
   }
 </style>
@@ -270,30 +398,29 @@ const START = 12;
 <script>
   for (const root of document.querySelectorAll<HTMLElement>('[data-balance-demo]')) {
     const input = root.querySelector<HTMLInputElement>('[data-slider]');
-    const marker = root.querySelector<SVGCircleElement>('[data-marker]');
+    const pointer = root.querySelector<HTMLElement>('[data-pointer]');
     const value = root.querySelector<HTMLElement>('[data-value]');
-    const zone = root.querySelector<HTMLElement>('[data-zone]');
-    if (!input || !marker || !value || !zone) continue;
+    const sign = root.querySelector<HTMLElement>('[data-sign]');
+    const tag = root.querySelector<HTMLElement>('[data-zone]');
+    const phone = root.querySelector<HTMLElement>('.phone');
+    if (!input || !pointer || !value || !sign || !tag || !phone) continue;
 
-    const ZONES = [
-      { max: 40, label: 'Balanced', color: 'var(--color-demo-zone-good)', cls: '' },
-      { max: 70, label: 'Drifting', color: 'var(--color-demo-zone-mid)', cls: 'is-mid' },
-      { max: 101, label: 'Off balance', color: 'var(--color-demo-zone-off)', cls: 'is-off' },
-    ];
+    // Scale the app-sized overlay (375px wide) to the phone's rendered width
+    new ResizeObserver(() => root.style.setProperty('--s', String(phone.clientWidth / 375))).observe(phone);
 
+    // The arc sweeps 244°, so −100 → −122° and +100 → +122° from the top
     const render = () => {
       const v = Number(input.value);
-      const angle = Math.PI + Math.PI * ((v + 100) / 200);
-      marker.setAttribute('cx', String(110 + 100 * Math.cos(angle)));
-      marker.setAttribute('cy', String(110 + 100 * Math.sin(angle)));
-      value.textContent = v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '0';
-      const z = ZONES.find((zz) => Math.abs(v) <= zz.max) ?? ZONES[2];
-      zone.textContent = z.label;
-      root.style.setProperty('--zone', z.color);
-      root.classList.toggle('is-mid', z.cls === 'is-mid');
-      // The photo only changes once you leave the green (mid or off)
-      root.classList.toggle('is-off', z.cls !== '');
-      input.setAttribute('aria-valuetext', `${value.textContent}, ${z.label}`);
+      const abs = Math.abs(v);
+      pointer.style.setProperty('--a', `${v * 1.22}deg`);
+      value.textContent = String(abs);
+      sign.textContent = v > 0 ? '+' : v < 0 ? '−' : '';
+      const zone = abs <= 35 ? 'good' : abs <= 60 ? 'mid' : 'off';
+      root.classList.toggle('is-mid', zone === 'mid');
+      root.classList.toggle('is-off', zone === 'off');
+      root.classList.toggle('is-changed', zone !== 'good');
+      tag.textContent = zone === 'good' ? 'Green zone' : zone === 'mid' ? 'Yellow zone' : 'Orange zone';
+      input.setAttribute('aria-valuetext', `${sign.textContent}${abs}, ${tag.textContent}`);
     };
     input.addEventListener('input', render);
     render();
