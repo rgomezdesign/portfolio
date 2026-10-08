@@ -12,7 +12,13 @@ export type Block =
   | { type: 'balance-demo'; caption: string; screens: { good: Screen; off: Screen } }
   // Web projects: a screenshot in a browser frame, optionally with a phone beside it
   | { type: 'browser'; shot: Screen; url?: string; phone?: Screen; caption?: string }
-  | { type: 'resize-demo'; caption: string; url?: string; shots: { desktop: Screen; tablet: Screen; mobile: Screen } };
+  | { type: 'resize-demo'; caption: string; url?: string; shots: { desktop: Screen; tablet: Screen; mobile: Screen } }
+  // Process images in a tinted panel (moodboards, studies, renders)
+  | { type: 'gallery'; images: Screen[]; caption: string; layout?: 'single' | 'row' }
+  // Drag to compare two aligned images (e.g. wireframe vs final)
+  | { type: 'compare'; before: Screen & { label: string }; after: Screen & { label: string }; caption: string }
+  // The real site, embedded and usable, with desktop/phone views
+  | { type: 'live'; src: string; url: string; caption: string };
 
 export type Cover = { kind: 'phones'; screens: Screen[] } | { kind: 'browser'; shot: Screen; url?: string; phone?: Screen };
 

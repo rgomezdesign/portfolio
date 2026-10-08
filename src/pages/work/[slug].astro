@@ -15,6 +15,9 @@ import BalanceDemo from '../../components/BalanceDemo.astro';
 import MoreWork from '../../components/MoreWork.astro';
 import CaseBrowser from '../../components/CaseBrowser.astro';
 import ResizeDemo from '../../components/ResizeDemo.astro';
+import CaseGallery from '../../components/CaseGallery.astro';
+import CompareDemo from '../../components/CompareDemo.astro';
+import LiveSite from '../../components/LiveSite.astro';
 import { projects } from '../../data/site';
 import { caseStudies } from '../../data/cases';
 
@@ -73,6 +76,12 @@ const year = new Date().getFullYear();
                 <CaseBrowser shot={block.shot} url={block.url} phone={block.phone} caption={block.caption} tint={project.tint} />
               ) : block.type === 'resize-demo' ? (
                 <ResizeDemo caption={block.caption} url={block.url} shots={block.shots} tint={project.tint} />
+              ) : block.type === 'gallery' ? (
+                <CaseGallery images={block.images} caption={block.caption} layout={block.layout} tint={project.tint} />
+              ) : block.type === 'compare' ? (
+                <CompareDemo before={block.before} after={block.after} caption={block.caption} tint={project.tint} />
+              ) : block.type === 'live' ? (
+                <LiveSite src={block.src} url={block.url} caption={block.caption} tint={project.tint} />
               ) : block.type === 'balance-demo' ? (
                 <BalanceDemo caption={block.caption} screens={block.screens} tint={project.tint} />
               ) : (
@@ -111,6 +120,7 @@ const year = new Date().getFullYear();
   }
   .case {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-112);
     padding-top: var(--space-160);
   }
@@ -130,6 +140,7 @@ const year = new Date().getFullYear();
   }
   .case__chapter {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-48);
   }
   .footer {

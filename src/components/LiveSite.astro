@@ -1,0 +1,245 @@
+---
+// Mirrors Figma "Demo/Live site": the real site running inside a browser window, desktop or phone.
+// Desktop renders the page at 1440px wide and scales it to fit; phone renders at 390px.
+interface Props {
+  src: string;
+  url: string;
+  caption: string;
+  tint: string;
+}
+const { src, url, caption, tint } = Astro.props;
+---
+<figure class="live" data-reveal>
+  <div class="live__panel" style={`--tint:${tint}`} data-live>
+    <div class="live__top">
+      <p class="live__try t-label-strong">Try it: this is the real site <span aria-hidden="true">↓</span></p>
+      <div class="presets" role="group" aria-label="Preview size">
+        <button type="button" class="preset t-label" data-mode="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" class="preset t-label" data-mode="phone" aria-pressed="false">Phone</button>
+        <a class="open t-label" href={src} target="_blank" rel="noopener noreferrer">Open ↗</a>
+      </div>
+    </div>
+    <div class="window" data-window>
+      <div class="window__bar" aria-hidden="true">
+        <span class="window__dots"><i></i><i></i><i></i></span>
+        <span class="window__url t-caption">{url}</span>
+      </div>
+      <div class="window__view" data-view>
+        <button type="button" class="poster" data-load>
+          <span class="poster__label t-label-strong">Load the live site</span>
+          <span class="t-caption">Runs right here. Scroll, open a chair, try the menu.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <figcaption class="t-caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .live {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .live__panel {
+    display: grid;
+    gap: var(--space-24);
+    padding: var(--space-48) var(--space-64) var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .live__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+  }
+  .live__try {
+    color: var(--color-accent-text);
+  }
+  .presets {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-full);
+    background: rgb(255 255 255 / 0.6);
+  }
+  .preset,
+  .open {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 var(--space-16);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+  .preset[aria-pressed='true'] {
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+  .open:hover {
+    color: var(--color-text-primary);
+  }
+
+  .window {
+    width: 100%;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+    transition: width 520ms var(--ease-spring);
+  }
+  .is-phone .window {
+    width: min(392px, 100%);
+    border-radius: 36px;
+  }
+  .window__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 var(--space-14);
+    background: var(--color-bg-subtle);
+  }
+  .window__dots {
+    display: flex;
+    gap: var(--space-6);
+  }
+  .window__dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+  .window__url {
+    position: absolute;
+    left: 50%;
+    width: min(260px, calc(100% - 120px));
+    padding: 2px var(--space-12);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    translate: -50% 0;
+  }
+  .window__view {
+    position: relative;
+    height: var(--h, 620px);
+    overflow: hidden;
+    background: #f5f4f2;
+  }
+  .is-phone .window__view {
+    --h: 720px;
+  }
+  .window__view :global(iframe) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    transform-origin: 0 0;
+  }
+  .poster {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: var(--space-8);
+    border: 0;
+    background: #f5f4f2;
+    color: var(--color-text-secondary);
+    text-align: center;
+    cursor: pointer;
+  }
+  .poster__label {
+    justify-self: center;
+    padding: var(--space-12) var(--space-24);
+    border-radius: var(--radius-full);
+    background: #2e2e2e;
+    color: #fff;
+    transition: transform var(--duration-base) var(--ease-spring);
+  }
+  .poster:hover .poster__label {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 1023px) {
+    .live__panel {
+      padding: var(--space-40) var(--space-24) var(--space-48);
+    }
+  }
+  @media (max-width: 767px) {
+    .live__panel {
+      padding: var(--space-24) var(--space-16) var(--space-32);
+      border-radius: var(--radius-md);
+    }
+    .live__try {
+      display: none;
+    }
+    .presets {
+      width: 100%;
+    }
+    .preset,
+    .open {
+      flex: 1;
+      justify-content: center;
+    }
+    .window__url {
+      display: none;
+    }
+    .window__view {
+      --h: 560px;
+    }
+    .is-phone .window {
+      border-radius: var(--radius-md);
+    }
+  }
+</style>
+
+<script>
+  // The iframe loads only when asked (keeps the case study fast), then follows the Desktop/Phone toggle.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-live]')) {
+    const view = root.querySelector<HTMLElement>('[data-view]');
+    const load = root.querySelector<HTMLButtonElement>('[data-load]');
+    const src = root.querySelector<HTMLAnchorElement>('.open')?.href;
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-mode]')];
+    if (!view || !load || !src) continue;
+    let frame: HTMLIFrameElement | null = null;
+    let mode: 'desktop' | 'phone' = window.innerWidth < 768 ? 'phone' : 'desktop';
+
+    const layout = () => {
+      root.classList.toggle('is-phone', mode === 'phone');
+      for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+      if (!frame) return;
+      const w = view.clientWidth;
+      const h = view.clientHeight;
+      const vw = mode === 'phone' ? 390 : 1440; // the site's own layout width
+      const scale = Math.min(1, w / vw);
+      frame.style.width = `${vw}px`;
+      frame.style.height = `${h / scale}px`;
+      frame.style.transform = `scale(${scale})`;
+    };
+
+    load.addEventListener('click', () => {
+      frame = document.createElement('iframe');
+      frame.src = src;
+      frame.title = 'Nuvem live site';
+      frame.loading = 'lazy';
+      load.remove();
+      view.append(frame);
+      layout();
+    });
+    for (const b of buttons) b.addEventListener('click', () => { mode = b.dataset.mode as typeof mode; layout(); window.setTimeout(layout, 540); });
+    new ResizeObserver(layout).observe(view);
+    layout();
+  }
+</script>

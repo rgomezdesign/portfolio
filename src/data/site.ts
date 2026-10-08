@@ -1,6 +1,6 @@
 import type { ImageMetadata } from 'astro';
 import palazzo from '../assets/work/palazzo.jpg';
-import nuvem from '../assets/work/nuvem.png';
+import nuvem from '../assets/work/nuvem/home-desktop.png';
 import soundGarden from '../assets/work/sound-garden.png';
 import nutuGoals from '../assets/work/nutu/goals-detail-after.png';
 import nutuUnlocked from '../assets/work/nutu/fy-unlocked.png';
@@ -56,9 +56,9 @@ export const projects: Project[] = [
     slug: 'nuvem',
     title: 'Nuvem',
     summary: 'A calm, sculptural site for a furniture collection',
-    meta: ['Web design & 3D', 'Concept', '2025'],
+    meta: ['Brand, 3D & web', 'Concept', '2025 — 2026'],
     tint: 'var(--color-project-nuvem)',
-    media: { kind: 'browser', image: nuvem, alt: 'The Nuvem Collection homepage showing a carousel of sculptural chairs' },
+    media: { kind: 'browser', image: nuvem, alt: 'The Nuvem homepage: “The Nuvem Collection” over a carousel of four chairs' },
   },
   {
     slug: 'sound-garden',

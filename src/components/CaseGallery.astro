@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import type { Screen } from '../data/cases/types';
+// Mirrors Figma "Case/Gallery": process images on the project tint. "row" lays tall studies side by side.
+interface Props {
+  images: Screen[];
+  caption: string;
+  tint: string;
+  layout?: 'single' | 'row';
+}
+const { images, caption, tint, layout = 'single' } = Astro.props;
+---
+<figure class:list={['gallery', `gallery--${layout}`]} data-reveal>
+  <div class="gallery__panel" style={`--tint:${tint}`}>
+    {images.map((img, i) => (
+      <div class="gallery__item" style={`--i:${i}`}>
+        <Image src={img.src} alt={img.alt} widths={layout === 'row' ? [240, 480] : [800, 1200, 1800]} sizes={layout === 'row' ? '(max-width: 767px) 40vw, 200px' : '(max-width: 767px) 92vw, 1040px'} class="gallery__img" loading="lazy" />
+      </div>
+    ))}
+  </div>
+  <figcaption class="t-caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .gallery__panel {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-24);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .gallery__item {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .gallery--single .gallery__item {
+    width: min(100%, 880px);
+  }
+  .gallery--row .gallery__item {
+    flex: 0 1 180px;
+  }
+  .gallery__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-media);
+  }
+  .gallery--row .gallery__img {
+    background: #fff;
+  }
+  /* Studies rise in one after another */
+  :global(.js-reveal) .gallery[data-reveal]:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+  :global(.js-reveal) .gallery[data-reveal] .gallery__item {
+    transition:
+      opacity 700ms var(--ease-out),
+      transform 900ms var(--ease-spring);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  :global(.js-reveal) .gallery[data-reveal]:not(.is-in) .gallery__item {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  @media (max-width: 1023px) {
+    .gallery__panel {
+      padding: var(--space-40) var(--space-24);
+    }
+  }
+  @media (max-width: 767px) {
+    .gallery__panel {
+      gap: var(--space-12);
+      padding: var(--space-24) var(--space-16);
+      border-radius: var(--radius-md);
+    }
+    .gallery--row .gallery__panel {
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .gallery--row .gallery__item {
+      flex: 0 0 38%;
+      scroll-snap-align: start;
+    }
+  }
+</style>
