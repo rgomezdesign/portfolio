@@ -13,6 +13,8 @@ import CaseScreens from '../../components/CaseScreens.astro';
 import GoalDemo from '../../components/GoalDemo.astro';
 import BalanceDemo from '../../components/BalanceDemo.astro';
 import MoreWork from '../../components/MoreWork.astro';
+import CaseBrowser from '../../components/CaseBrowser.astro';
+import ResizeDemo from '../../components/ResizeDemo.astro';
 import { projects } from '../../data/site';
 import { caseStudies } from '../../data/cases';
 
@@ -51,7 +53,11 @@ const year = new Date().getFullYear();
         </header>
 
         <div class="enter" style="--i:5">
-          <CaseScreens screens={study.cover} tint={project.tint} size="cover" eager />
+          {study.cover.kind === 'phones' ? (
+            <CaseScreens screens={study.cover.screens} tint={project.tint} size="cover" eager />
+          ) : (
+            <CaseBrowser shot={study.cover.shot} url={study.cover.url} phone={study.cover.phone} tint={project.tint} size="cover" eager />
+          )}
         </div>
 
         {study.chapters.map((chapter) => (
@@ -63,6 +69,10 @@ const year = new Date().getFullYear();
                 <CaseScreens screens={block.screens} caption={block.caption} tint={project.tint} />
               ) : block.type === 'goal-demo' ? (
                 <GoalDemo statement={block.statement} support={block.support} tint={project.tint} />
+              ) : block.type === 'browser' ? (
+                <CaseBrowser shot={block.shot} url={block.url} phone={block.phone} caption={block.caption} tint={project.tint} />
+              ) : block.type === 'resize-demo' ? (
+                <ResizeDemo caption={block.caption} url={block.url} shots={block.shots} tint={project.tint} />
               ) : block.type === 'balance-demo' ? (
                 <BalanceDemo caption={block.caption} screens={block.screens} tint={project.tint} />
               ) : (

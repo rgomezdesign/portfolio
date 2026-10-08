@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import type { Screen } from '../data/cases/types';
+// Mirrors Figma "Case/Browser": a real screenshot in a light browser frame on the project tint,
+// with an optional phone overlapping the bottom-right corner.
+interface Props {
+  shot: Screen;
+  url?: string;
+  phone?: Screen;
+  caption?: string;
+  tint: string;
+  size?: 'default' | 'cover';
+  eager?: boolean;
+}
+const { shot, url, phone, caption, tint, size = 'default', eager = false } = Astro.props;
+---
+<figure class:list={['web', `web--${size}`, { 'web--with-phone': phone }]} data-reveal={eager ? undefined : ''}>
+  <div class="web__panel" style={`--tint:${tint}`}>
+    <div class:list={['browser', { enter: eager }]} style="--i:5">
+      <div class="browser__bar" aria-hidden="true">
+        <span class="browser__dots"><i></i><i></i><i></i></span>
+        {url && <span class="browser__url t-caption">{url}</span>}
+      </div>
+      <Image src={shot.src} alt={shot.alt} widths={[640, 1120, 1600, 2240]} sizes="(max-width: 767px) 92vw, (max-width: 1279px) 80vw, 1040px" class="browser__shot" loading={eager ? 'eager' : 'lazy'} />
+    </div>
+    {phone && (
+      <div class:list={['phone', { enter: eager }]} style="--i:6">
+        <Image src={phone.src} alt={phone.alt} widths={[240, 480]} sizes="(max-width: 767px) 28vw, 240px" class="phone__shot" loading={eager ? 'eager' : 'lazy'} />
+      </div>
+    )}
+  </div>
+  {caption && <figcaption class="t-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .web {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .web__panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: var(--space-64) var(--space-64) 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .web--cover .web__panel {
+    padding-top: var(--space-80);
+  }
+  .web--with-phone .web__panel {
+    padding-right: 16%;
+    padding-bottom: var(--space-64);
+  }
+
+  .browser {
+    width: 100%;
+    max-width: 1040px;
+    overflow: hidden;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+  }
+  .web--with-phone .browser {
+    border-radius: var(--radius-md);
+  }
+  .browser__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    padding: var(--space-10) var(--space-14);
+    background: var(--color-bg-subtle);
+  }
+  .browser__dots {
+    display: flex;
+    gap: var(--space-6);
+  }
+  .browser__dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+  .browser__url {
+    flex: 0 1 280px;
+    margin-inline: auto;
+    padding: 2px var(--space-12);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .web--with-phone .browser__url {
+    margin-right: 56px;
+  }
+  .browser__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .phone {
+    position: absolute;
+    right: 6%;
+    bottom: var(--space-40);
+    width: 19%;
+    max-width: 240px;
+    container-type: inline-size;
+  }
+  .phone__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-border-default);
+    border-radius: 12cqw;
+    box-shadow: var(--shadow-floating);
+  }
+
+  @media (max-width: 1023px) {
+    .web__panel {
+      padding: var(--space-40) var(--space-24) 0;
+    }
+    .web--with-phone .web__panel {
+      padding-bottom: var(--space-40);
+    }
+    .phone {
+      bottom: var(--space-24);
+    }
+  }
+  @media (max-width: 767px) {
+    .web__panel {
+      padding: var(--space-24) var(--space-16) 0;
+      border-radius: var(--radius-md);
+    }
+    .web--with-phone .web__panel {
+      padding-right: 22%;
+      padding-bottom: var(--space-32);
+    }
+    .phone {
+      right: var(--space-12);
+      bottom: var(--space-16);
+      width: 26%;
+    }
+    .browser__url {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,313 @@
+---
+import { Image } from 'astro:assets';
+import type { Screen } from '../data/cases/types';
+// Mirrors Figma "Demo/Resize": real captures of the live site at desktop, tablet and phone widths
+// in a browser window you can drag narrower. The layout swaps at the same breakpoints as the site.
+interface Props {
+  caption: string;
+  url?: string;
+  shots: { desktop: Screen; tablet: Screen; mobile: Screen };
+  tint: string;
+}
+const { caption, url, shots, tint } = Astro.props;
+---
+<figure class="resize" data-reveal>
+  <div class="resize__panel" style={`--tint:${tint}`} data-resize-demo>
+    <div class="resize__top">
+      <p class="resize__try t-label-strong">Try it: drag the edge <span aria-hidden="true">↔</span></p>
+      <div class="presets" role="group" aria-label="Preview width">
+        <button type="button" class="preset t-label" data-preset="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" class="preset t-label" data-preset="tablet" aria-pressed="false">Tablet</button>
+        <button type="button" class="preset t-label" data-preset="mobile" aria-pressed="false">Phone</button>
+      </div>
+    </div>
+
+    <div class="stage" data-stage>
+      <div class="window" data-window>
+        <div class="window__bar" aria-hidden="true">
+          <span class="window__dots"><i></i><i></i><i></i></span>
+          {url && <span class="window__url t-caption">{url}</span>}
+          <span class="window__width t-caption" data-width-label></span>
+        </div>
+        <div class="window__view" data-layout="desktop">
+          <Image src={shots.desktop.src} alt={shots.desktop.alt} widths={[800, 1200, 2000]} sizes="(max-width: 767px) 92vw, 1040px" class="shot shot--desktop" loading="lazy" />
+          <Image src={shots.tablet.src} alt={shots.tablet.alt} widths={[600, 1000, 1640]} sizes="(max-width: 767px) 92vw, 820px" class="shot shot--tablet" loading="lazy" />
+          <Image src={shots.mobile.src} alt={shots.mobile.alt} widths={[400, 780]} sizes="390px" class="shot shot--mobile" loading="lazy" />
+        </div>
+        <label class="handle" data-handle>
+          <span class="visually-hidden">Preview width</span>
+          <input type="range" min="0" max="100" step="1" value="100" data-width-input />
+          <span class="handle__grip" aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+  <figcaption class="t-caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .resize {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .resize__panel {
+    display: grid;
+    gap: var(--space-24);
+    padding: var(--space-48) var(--space-64) var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .resize__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+  }
+  .resize__try {
+    color: var(--color-accent-text);
+  }
+  .presets {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-full);
+    background: rgb(255 255 255 / 0.6);
+  }
+  .preset {
+    min-height: 36px;
+    padding: 0 var(--space-16);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out);
+  }
+  .preset[aria-pressed='true'] {
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+
+  /* The window changes width; its height follows the layout's real proportions, capped */
+  .stage {
+    position: relative;
+  }
+  .window {
+    position: relative;
+    width: var(--w, 100%);
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+  }
+  .window:not(.is-dragging) {
+    transition: width 520ms var(--ease-spring);
+  }
+  .window:not(.is-dragging) .window__view {
+    transition: height 520ms var(--ease-spring);
+  }
+  .window__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    height: 36px;
+    padding: 0 var(--space-14);
+    background: var(--color-bg-subtle);
+  }
+  .window__dots {
+    display: flex;
+    flex: none;
+    gap: var(--space-6);
+  }
+  .window__dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+  .window__url {
+    flex: 0 1 260px;
+    min-width: 0;
+    margin-inline: auto;
+    padding: 2px var(--space-12);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .window__width {
+    flex: none;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .window__view {
+    position: relative;
+    height: var(--vh, 560px);
+    overflow: hidden;
+  }
+  .shot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 320ms var(--ease-out);
+  }
+  /* Phone layout keeps its real width and sits centered, like the site at 390px */
+  .shot--mobile {
+    left: 50%;
+    width: 390px;
+    max-width: 100%;
+    translate: -50% 0;
+  }
+  [data-layout='desktop'] .shot--desktop,
+  [data-layout='tablet'] .shot--tablet,
+  [data-layout='mobile'] .shot--mobile {
+    opacity: 1;
+  }
+
+  /* Drag handle on the right edge, plus a range input for keyboard users */
+  .handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+  .handle input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+  }
+  .handle__grip {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    width: 6px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-tertiary);
+    translate: 0 -50%;
+    opacity: 0.55;
+    pointer-events: none;
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      height var(--duration-base) var(--ease-spring);
+  }
+  .handle:hover .handle__grip,
+  .is-dragging .handle__grip,
+  .handle:focus-within .handle__grip {
+    height: 72px;
+    opacity: 1;
+  }
+  .handle:focus-within .handle__grip {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 1023px) {
+    .resize__panel {
+      padding: var(--space-40) var(--space-24) var(--space-48);
+    }
+  }
+  @media (max-width: 767px) {
+    .resize__panel {
+      padding: var(--space-24) var(--space-16) var(--space-32);
+      border-radius: var(--radius-md);
+    }
+    .resize__try {
+      display: none;
+    }
+    .presets {
+      width: 100%;
+    }
+    .preset {
+      flex: 1;
+    }
+    .handle {
+      display: none;
+    }
+    .window__url {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Breakpoints match the live site's layouts we captured (phone 390, tablet 820, desktop 1440)
+  const layoutFor = (px: number) => (px < 600 ? 'mobile' : px < 1000 ? 'tablet' : 'desktop');
+  const PRESET: Record<string, number> = { desktop: Infinity, tablet: 820, mobile: 390 };
+  const MIN = 360;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-resize-demo]')) {
+    const stage = root.querySelector<HTMLElement>('[data-stage]');
+    const win = root.querySelector<HTMLElement>('[data-window]');
+    const view = root.querySelector<HTMLElement>('.window__view');
+    const label = root.querySelector<HTMLElement>('[data-width-label]');
+    const input = root.querySelector<HTMLInputElement>('[data-width-input]');
+    const handle = root.querySelector<HTMLElement>('[data-handle]');
+    const presets = [...root.querySelectorAll<HTMLButtonElement>('[data-preset]')];
+    if (!stage || !win || !view || !label || !input || !handle) continue;
+
+    let width = Infinity;
+    const max = () => stage.clientWidth;
+
+    let forced: string | undefined;
+    const apply = (px: number, preset?: string) => {
+      const w = Math.max(Math.min(px, max()), Math.min(MIN, max()));
+      width = px;
+      forced = preset;
+      win.style.setProperty('--w', `${w}px`);
+      // Buttons always show their layout (the window may be narrower than the real width on small
+      // pages); dragging follows the window's actual width
+      const layout = preset ?? layoutFor(w);
+      view.dataset.layout = layout;
+      // Show as much of the page as the capture has, up to a cap (desktop 1440×900, tablet 820×1000, phone 390×844)
+      const natural = layout === 'desktop' ? w * (900 / 1440) : layout === 'tablet' ? w * (1000 / 820) : Math.min(w, 390) * (844 / 390);
+      view.style.setProperty('--vh', `${Math.round(Math.min(natural, max() < 700 ? 520 : 600))}px`);
+      const real = { mobile: 390, tablet: 820, desktop: 1440 }[layout] ?? w;
+      label.textContent = preset && w < real ? `${real} px` : `${Math.round(w)} px`;
+      input.value = String(Math.round(((w - MIN) / Math.max(max() - MIN, 1)) * 100));
+      for (const b of presets) b.setAttribute('aria-pressed', String(b.dataset.preset === layout));
+    };
+
+    for (const b of presets) b.addEventListener('click', () => apply(PRESET[b.dataset.preset ?? 'desktop'], b.dataset.preset));
+    input.addEventListener('input', () => apply(MIN + (Number(input.value) / 100) * (max() - MIN)));
+
+    // Pointer drag on the right edge: the window stays centered, so it grows by twice the pointer travel
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      handle.setPointerCapture(e.pointerId);
+      win.classList.add('is-dragging');
+      const startX = e.clientX;
+      const startW = win.getBoundingClientRect().width;
+      const move = (ev: PointerEvent) => apply(startW + (ev.clientX - startX) * 2);
+      const up = () => {
+        win.classList.remove('is-dragging');
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', up);
+        handle.removeEventListener('pointercancel', up);
+      };
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', up);
+      handle.addEventListener('pointercancel', up);
+    });
+
+    new ResizeObserver(() => apply(width, forced)).observe(stage);
+    apply(Infinity, 'desktop');
+  }
+</script>

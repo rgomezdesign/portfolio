@@ -23,6 +23,7 @@
   --primitive-tint-butter: #f1edd6;
   --primitive-tint-peach: #f6e7dc;
   --primitive-tint-nutu: #d9e2dc;
+  --primitive-tint-palazzo: #f1e2db;
   --primitive-nutu-green: #496257;
   --primitive-nutu-surface: #f6f7f2;
   --primitive-nutu-ink: #383838;
@@ -56,7 +57,7 @@
   --color-accent-subtle: var(--primitive-orange-50);
   --color-focus-ring: var(--primitive-orange-500);
   --color-project-nutu: var(--primitive-tint-nutu);
-  --color-project-palazzo: var(--primitive-tint-sage);
+  --color-project-palazzo: var(--primitive-tint-palazzo);
   --color-project-nuvem: var(--primitive-tint-stone);
   --color-project-sound-garden: var(--primitive-tint-butter);
   /* Interactive case-study demos (recreate nutu app colors) */

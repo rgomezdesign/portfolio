@@ -48,7 +48,7 @@ export const nutu: CaseStudy = {
     { label: 'Features', value: 'Goals, Future You' },
     { label: 'Status', value: 'Shipping fall 2026' },
   ],
-  cover: [s.goalsDetail, s.fyUnlocked, s.fyResults],
+  cover: { kind: 'phones', screens: [s.goalsDetail, s.fyUnlocked, s.fyResults] },
   chapters: [
     [
       {

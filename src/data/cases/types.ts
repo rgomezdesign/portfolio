@@ -9,7 +9,12 @@ export type Block =
   | { type: 'callout'; statement: string; support: string }
   // Interactive demos that recreate a design decision (Figma "Demo/…" components)
   | { type: 'goal-demo'; statement: string; support: string }
-  | { type: 'balance-demo'; caption: string; screens: { good: Screen; off: Screen } };
+  | { type: 'balance-demo'; caption: string; screens: { good: Screen; off: Screen } }
+  // Web projects: a screenshot in a browser frame, optionally with a phone beside it
+  | { type: 'browser'; shot: Screen; url?: string; phone?: Screen; caption?: string }
+  | { type: 'resize-demo'; caption: string; url?: string; shots: { desktop: Screen; tablet: Screen; mobile: Screen } };
+
+export type Cover = { kind: 'phones'; screens: Screen[] } | { kind: 'browser'; shot: Screen; url?: string; phone?: Screen };
 
 export type CaseStudy = {
   slug: string;
@@ -18,7 +23,7 @@ export type CaseStudy = {
   lead: string;
   meta: { label: string; value: string }[];
   live?: { href: string; label: string };
-  cover: Screen[];
+  cover: Cover;
   /** Each chapter is a group of blocks; chapters are spaced further apart than blocks. */
   chapters: Block[][];
 };
