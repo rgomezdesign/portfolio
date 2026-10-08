@@ -2,6 +2,9 @@ import type { ImageMetadata } from 'astro';
 import palazzo from '../assets/work/palazzo.jpg';
 import nuvem from '../assets/work/nuvem.png';
 import soundGarden from '../assets/work/sound-garden.png';
+import nutuGoals from '../assets/work/nutu/goals-detail-after.png';
+import nutuUnlocked from '../assets/work/nutu/fy-unlocked.png';
+import nutuResults from '../assets/work/nutu/fy-results.png';
 
 export const site = {
   name: 'Roman Gomez',
@@ -25,7 +28,7 @@ export type Project = {
   summary: string;
   meta: string[];
   tint: string; // a --color-project-* token
-  media: { kind: 'browser'; image: ImageMetadata; alt: string } | { kind: 'phones' };
+  media: { kind: 'browser'; image: ImageMetadata; alt: string } | { kind: 'phones'; screens: ImageMetadata[]; alt: string };
 };
 
 export const projects: Project[] = [
@@ -35,7 +38,11 @@ export const projects: Project[] = [
     summary: 'Helping a nutrition app grow into a metabolic health platform',
     meta: ['Product design', 'Willow Laboratories', '2021 — now'],
     tint: 'var(--color-project-nutu)',
-    media: { kind: 'phones' },
+    media: {
+      kind: 'phones',
+      screens: [nutuGoals, nutuUnlocked, nutuResults],
+      alt: 'Three nutu screens: a goal in progress, Future You unlocked, and AI-generated results',
+    },
   },
   {
     slug: 'palazzo-salon',

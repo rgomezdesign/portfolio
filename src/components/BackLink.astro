@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+// Mirrors Figma "Back Link".
+interface Props {
+  href?: string;
+  label?: string;
+}
+const { href = '/#work', label = 'All work' } = Astro.props;
+---
+<a class="back t-label" href={href}>
+  <Icon name="arrow-right" size={20} class="back__arrow" />
+  <span>{label}</span>
+</a>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    min-height: 44px;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .back :global(.back__arrow) {
+    rotate: 180deg;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .back:hover {
+    color: var(--color-text-primary);
+  }
+  .back:hover :global(.back__arrow) {
+    transform: translateX(4px);
+  }
+</style>

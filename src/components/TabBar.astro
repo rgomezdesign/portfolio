@@ -2,10 +2,14 @@
 import Icon from './Icon.astro';
 import { nav } from '../data/site';
 // Mirrors Figma "Tab Bar": Work · About · Contact. Mobile only (<768px). Fixed 238px so only the highlight moves.
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
 ---
 <nav class="tabbar" aria-label="Primary" data-nav-root>
   {nav.map((t, i) => (
-    <a class:list={['tab', { 'is-active': i === 0 }]} href={`#${t.id}`} data-nav-link={t.id} aria-label={t.label} aria-current={i === 0 ? 'true' : undefined}>
+    <a class:list={['tab', { 'is-active': i === 0 }]} href={`${base}#${t.id}`} data-nav-link={t.id} aria-label={t.label} aria-current={i === 0 ? 'true' : undefined}>
       <Icon name={t.icon} size={22} />
       <span class="tab__label" aria-hidden="true"><span class="t-label-strong">{t.label}</span></span>
     </a>

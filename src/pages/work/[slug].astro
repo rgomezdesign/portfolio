@@ -1,36 +1,175 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Brand from '../../components/Brand.astro';
+import PillNav from '../../components/PillNav.astro';
+import TabBar from '../../components/TabBar.astro';
 import Button from '../../components/Button.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import BackLink from '../../components/BackLink.astro';
+import CaseMeta from '../../components/CaseMeta.astro';
+import CaseSection from '../../components/CaseSection.astro';
+import CaseCallout from '../../components/CaseCallout.astro';
+import CaseScreens from '../../components/CaseScreens.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
 import { projects } from '../../data/site';
+import { caseStudies } from '../../data/cases';
 
-// Placeholder until each case study is designed in Figma and built.
+// Mirrors the Figma case study template ("nutu · Desktop 1440" / "nutu · Mobile 390").
+// Projects without a written case study yet fall back to a short placeholder.
 export function getStaticPaths() {
-  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
 }
-const { project } = Astro.props;
+const { project, next } = Astro.props;
+const study = caseStudies[project.slug];
+const year = new Date().getFullYear();
 ---
-<Base title={`${project.title} — Roman Gomez`} description={project.summary}>
-  <header class="page top"><Brand /></header>
-  <main id="main" class="page placeholder">
-    <p class="t-caption">{project.meta.join(' · ')}</p>
-    <h1 class="t-display">{project.title}</h1>
-    <p class="t-lead">{project.summary}. The full case study is on its way.</p>
-    <Button href="/#work">Back to work</Button>
+<Base title={`${project.title} — Roman Gomez`} description={study?.lead ?? project.summary}>
+  <header class="top page">
+    <Brand />
+  </header>
+  <PillNav base="/" />
+
+  <main id="main" class="page case">
+    {study ? (
+      <>
+        <header class="case__header">
+          <div class="enter" style="--i:0"><BackLink /></div>
+          <div class="enter" style="--i:1"><Eyebrow text={study.eyebrow} /></div>
+          <h1 class="t-display enter" style="--i:2">{study.title}</h1>
+          <p class="case__lead t-lead enter" style="--i:3">{study.lead}</p>
+          <div class="enter" style="--i:4"><CaseMeta items={study.meta} /></div>
+          {study.live && (
+            <div class="enter" style="--i:5">
+              <Button href={study.live.href} variant="secondary" icon="external" external>{study.live.label}</Button>
+            </div>
+          )}
+        </header>
+
+        <div class="enter" style="--i:5">
+          <CaseScreens screens={study.cover} tint={project.tint} size="cover" eager />
+        </div>
+
+        {study.chapters.map((chapter) => (
+          <div class="case__chapter">
+            {chapter.map((block) =>
+              block.type === 'section' ? (
+                <CaseSection kicker={block.kicker} title={block.title} body={block.body} />
+              ) : block.type === 'screens' ? (
+                <CaseScreens screens={block.screens} caption={block.caption} tint={project.tint} />
+              ) : (
+                <CaseCallout statement={block.statement} support={block.support} />
+              ),
+            )}
+          </div>
+        ))}
+      </>
+    ) : (
+      <header class="case__header">
+        <BackLink />
+        <p class="t-caption">{project.meta.join(' · ')}</p>
+        <h1 class="t-display">{project.title}</h1>
+        <p class="case__lead t-lead">{project.summary}. The full case study is on its way.</p>
+      </header>
+    )}
+
+    <section class="case__next" aria-labelledby="next-title">
+      <SectionHeader id="next-title" title="Next project" />
+      <ul class="case__next-grid">
+        <ProjectCard project={next} />
+      </ul>
+    </section>
   </main>
+
+  <footer class="footer page">
+    <p class="t-caption">© {year} Roman Gomez</p>
+  </footer>
+
+  <TabBar base="/" />
 </Base>
 
 <style>
   .top {
-    padding-top: 46px;
+    position: absolute;
+    top: 46px;
+    left: 0;
+    right: 0;
+    z-index: 40;
   }
-  .placeholder {
+  .case {
+    display: grid;
+    gap: var(--space-112);
+    padding-top: var(--space-160);
+  }
+  .case__header {
     display: grid;
     justify-items: start;
     gap: var(--space-24);
-    padding-block: var(--space-112);
   }
-  .placeholder .t-lead {
-    max-width: 628px;
+  .case__header > :global(*) {
+    max-width: 100%;
+  }
+  .case__header > div:has(.meta) {
+    justify-self: stretch;
+  }
+  .case__lead {
+    max-width: 760px;
+  }
+  .case__chapter {
+    display: grid;
+    gap: var(--space-48);
+  }
+  .case__next {
+    display: grid;
+    gap: var(--space-32);
+  }
+  .case__next-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-32);
+  }
+  .footer {
+    padding-top: var(--space-112);
+    padding-bottom: var(--space-48);
+  }
+  .footer p {
+    padding-top: var(--space-48);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  @media (max-width: 1023px) {
+    .case {
+      padding-top: 152px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .top {
+      position: static;
+      padding-top: var(--space-24);
+    }
+    .case {
+      gap: var(--space-64);
+      padding-top: var(--space-24);
+    }
+    .case__header {
+      gap: var(--space-20);
+    }
+    .case__chapter {
+      gap: var(--space-32);
+    }
+    .case__next {
+      gap: var(--space-24);
+    }
+    .case__next-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer {
+      padding-top: var(--space-64);
+      padding-bottom: 112px;
+    }
   }
 </style>

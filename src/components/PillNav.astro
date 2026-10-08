@@ -2,18 +2,23 @@
 import Button from './Button.astro';
 import { nav } from '../data/site';
 // Mirrors Figma "Pill Nav": Work · About · Contact. Desktop + tablet (≥768px). The active background slides between links.
+// On other pages (case studies) links point back to the home sections: base="/".
+interface Props {
+  base?: string;
+}
+const { base = '' } = Astro.props;
 const links = nav.filter((n) => n.id !== 'contact');
 ---
 <nav class="pill" aria-label="Primary" data-nav-root>
   <div class="pill__links">
     <span class="pill__indicator" aria-hidden="true" data-nav-indicator></span>
     {links.map((l, i) => (
-      <a class:list={['pill__link t-label', { 'is-active': i === 0 }]} href={`#${l.id}`} data-nav-link={l.id} data-label={l.label} aria-current={i === 0 ? 'true' : undefined}>
+      <a class:list={['pill__link t-label', { 'is-active': i === 0 }]} href={`${base}#${l.id}`} data-nav-link={l.id} data-label={l.label} aria-current={i === 0 ? 'true' : undefined}>
         {l.label}
       </a>
     ))}
   </div>
-  <Button href="#contact" data-nav-link="contact">Contact</Button>
+  <Button href={`${base}#contact`} data-nav-link="contact">Contact</Button>
 </nav>
 
 <style>

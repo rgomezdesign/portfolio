@@ -1,0 +1,48 @@
+---
+// Mirrors Figma "Case/Section" — Layout=Split (≥1024: heading cols 1–4, body cols 6–12) / Layout=Stacked.
+interface Props {
+  kicker?: string;
+  title: string;
+  body: string[];
+}
+const { kicker, title, body } = Astro.props;
+---
+<section class="case-section" data-reveal>
+  <div class="case-section__heading">
+    {kicker && <p class="case-section__kicker t-caption">{kicker}</p>}
+    <h2 class="t-h2">{title}</h2>
+  </div>
+  <div class="case-section__body">
+    {body.map((p) => <p class="t-lead">{p}</p>)}
+  </div>
+</section>
+
+<style>
+  .case-section {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--layout-gutter);
+    row-gap: var(--space-16);
+  }
+  .case-section__heading {
+    grid-column: 1 / 5;
+    display: grid;
+    align-content: start;
+    gap: var(--space-8);
+  }
+  .case-section__kicker {
+    color: var(--color-accent-text);
+  }
+  .case-section__body {
+    grid-column: 6 / 13;
+    display: grid;
+    gap: var(--space-24);
+    max-width: 640px;
+  }
+  @media (max-width: 1023px) {
+    .case-section__heading,
+    .case-section__body {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -26,13 +26,10 @@ const { slug, title, summary, meta, tint, media } = project;
           />
         </div>
       ) : (
-        <div class="phones" role="img" aria-label="nutu app screens (preview coming soon)">
-          {[0, 1, 2].map((p) => (
+        <div class="phones" role="img" aria-label={media.alt}>
+          {media.screens.map((src, p) => (
             <div class:list={['phone', { 'phone--raised': p === 1 }]}>
-              <span class="phone__bar"></span>
-              <span class="phone__tile phone__tile--accent"></span>
-              <span class="phone__tile"></span>
-              <span class="phone__tile"></span>
+              <Image src={src} alt="" widths={[200, 400]} sizes="(max-width: 767px) 26vw, 160px" class="phone__img" loading={index < 2 ? 'eager' : 'lazy'} />
             </div>
           ))}
         </div>
@@ -121,7 +118,7 @@ const { slug, title, summary, meta, tint, media } = project;
     object-position: top;
   }
 
-  /* nutu placeholder phones — replace with real screens once cleared to share */
+  /* nutu phones — real screens from the case study */
   .phones {
     position: absolute;
     top: 9cqw;
@@ -132,35 +129,20 @@ const { slug, title, summary, meta, tint, media } = project;
     translate: -50% 0;
   }
   .phone {
-    display: grid;
-    align-content: start;
-    gap: 2.2cqw;
     width: 25.6cqw;
-    aspect-ratio: 160 / 340;
     margin-top: 6.4cqw;
-    padding: 6.4cqw 3.8cqw 0;
-    border: 0.8cqw solid #1c1c3a;
-    border-radius: 4.5cqw;
-    background: var(--color-bg-surface);
-    box-shadow: var(--shadow-media);
   }
   .phone--raised {
     margin-top: 0;
   }
-  .phone__bar {
-    width: 60%;
-    height: 1.3cqw;
-    margin-bottom: 1.6cqw;
-    border-radius: 1cqw;
-    background: #5b5bd6;
-  }
-  .phone__tile {
-    height: 10.2cqw;
-    border-radius: 1.9cqw;
-    background: var(--color-bg-subtle);
-  }
-  .phone__tile--accent {
-    background: #eef0ff;
+  .phone__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 375 / 812;
+    border: 1px solid var(--color-border-default);
+    border-radius: 2.6cqw;
+    box-shadow: var(--shadow-media);
   }
 
   .card__text {

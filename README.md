@@ -44,3 +44,9 @@ Hero entrance stagger, scroll reveals (only for content below the fold), sliding
 ## Case studies
 
 `/work/[slug]` is a placeholder until each case study is designed in Figma and built.
+
+## Case studies
+
+Every project uses one template (Figma page "Case Study" components + `nutu · Desktop 1440` / `nutu · Mobile 390` frames):
+header (back link, eyebrow, title, lead, meta) → tinted cover → chapters of `CaseSection` (split ≥1024, stacked below), `CaseScreens` rows and `CaseCallout` → next project.
+Content lives in `src/data/cases/<slug>.ts`; projects without a file render a short placeholder.

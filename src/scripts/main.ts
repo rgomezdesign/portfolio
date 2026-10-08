@@ -48,8 +48,9 @@ function computeActive() {
       activeTop = top;
     }
   }
+  // Pages without the home sections (case studies) keep Work active
   const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-  if (atBottom) active = 'contact';
+  if (atBottom && sections.length) active = 'contact';
   setActive(active);
 }
 
@@ -72,7 +73,7 @@ window.addEventListener('resize', moveIndicator);
 for (const link of links) {
   link.addEventListener('click', () => {
     const id = link.dataset.navLink;
-    if (!id) return;
+    if (!id || !sections.length) return;
     setActive(id);
     lockUntil = performance.now() + (reduceMotion ? 50 : 900);
   });

@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import type { Screen } from '../data/cases/types';
+// Mirrors Figma "Case/Screen" instances in a tinted row. Scrolls sideways on mobile.
+interface Props {
+  screens: Screen[];
+  caption?: string;
+  tint: string;
+  size?: 'default' | 'cover';
+  eager?: boolean;
+}
+const { screens, caption, tint, size = 'default', eager = false } = Astro.props;
+const sizes = size === 'cover' ? '(max-width: 767px) 220px, 300px' : '(max-width: 767px) 196px, 280px';
+---
+<figure class:list={['screens', `screens--${size}`]} data-reveal={eager ? undefined : ''}>
+  <div class="screens__row" style={`--tint:${tint}`} tabindex={0} role="group" aria-label={caption ?? 'App screens'}>
+    {screens.map((s) => (
+      <div class="screen">
+        <Image src={s.src} alt={s.alt} widths={[300, 600]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="screen__img" />
+      </div>
+    ))}
+  </div>
+  {caption && <figcaption class="t-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .screens {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .screens__row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-40);
+    padding: var(--space-64) var(--space-40);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .screens--cover .screens__row {
+    padding-block: var(--space-80);
+  }
+  .screens__row:focus-visible {
+    outline-offset: 4px;
+  }
+  .screen {
+    flex: 0 1 280px;
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .screens--cover .screen {
+    flex-basis: 300px;
+  }
+  .screen__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 375 / 812;
+    border: 1px solid var(--color-border-default);
+    border-radius: 10cqw;
+    box-shadow: var(--shadow-media);
+    background: var(--color-bg-subtle);
+  }
+
+  @media (max-width: 1023px) {
+    .screens__row {
+      gap: var(--space-24);
+      padding: var(--space-48) var(--space-24);
+    }
+  }
+
+  /* Mobile: fixed-size screens that scroll sideways and peek past the edge */
+  @media (max-width: 767px) {
+    .screens__row {
+      justify-content: flex-start;
+      gap: var(--space-16);
+      padding: var(--space-32) var(--space-24);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--space-24);
+      scrollbar-width: none;
+    }
+    .screens__row::-webkit-scrollbar {
+      display: none;
+    }
+    .screen {
+      flex: 0 0 196px;
+      scroll-snap-align: start;
+    }
+    .screens--cover .screen {
+      flex-basis: 220px;
+    }
+  }
+</style>
