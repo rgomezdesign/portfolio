@@ -28,7 +28,7 @@ All copy is in `src/data/site.ts`: hero, projects, about, experience, email, Lin
 
 - **Resume:** `public/roman-gomez-cv.pdf` (opens in a new tab).
 - **Project images:** `src/assets/work/`. Astro converts them to WebP at the right sizes.
-- **nutu card:** uses placeholder phone art until real screens are cleared to share.
+- **nutu card:** real Goals and Future You screens.
 
 ## Responsive behavior
 
@@ -43,7 +43,7 @@ Hero entrance stagger, scroll reveals (only for content below the fold), sliding
 
 ## Case studies
 
-`/work/[slug]` is a placeholder until each case study is designed in Figma and built.
+`/work/[slug]` renders each case study from `src/data/cases/<slug>.ts`.
 
 ## Case studies
 
