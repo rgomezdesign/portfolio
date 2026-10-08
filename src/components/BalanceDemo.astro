@@ -30,6 +30,7 @@ const START = 12;
 
           <div class="gauge" aria-hidden="true">
             <span class="gauge__arc"></span>
+            <span class="gauge__cap gauge__cap--l"></span><span class="gauge__cap gauge__cap--r"></span>
             <span class="gauge__pointer" data-pointer><i></i></span>
             <span class="gauge__face"><span class="gauge__sign" data-sign>+</span><span data-value>{START}</span></span>
           </div>
@@ -82,10 +83,18 @@ const START = 12;
     width: var(--phone);
     aspect-ratio: 375 / 812;
     overflow: hidden;
-    border: 1px solid var(--color-border-default);
     border-radius: calc(var(--phone) * 0.1);
     box-shadow: var(--shadow-media);
     background: var(--color-demo-nutu-surface);
+  }
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border: 1px solid var(--color-border-default);
+    border-radius: inherit;
+    pointer-events: none;
   }
   .phone__shot {
     position: absolute;
@@ -182,21 +191,42 @@ const START = 12;
     height: 141px;
     margin: 10px auto 0;
   }
+  /* Arc measured from the real screen: 16px band (r 62.5–78.5), 236° sweep, round ends,
+     green band sits slightly left of top */
   .gauge__arc {
     position: absolute;
     inset: 0 0 auto;
     height: 158px;
     background: conic-gradient(
-      from -122deg,
-      var(--color-demo-zone-off) 0deg 34deg,
-      var(--color-demo-zone-mid) 62deg 76deg,
-      var(--color-demo-zone-good) 98deg 146deg,
-      var(--color-demo-zone-mid) 168deg 182deg,
-      var(--color-demo-zone-off) 210deg 244deg,
-      transparent 244deg
+      from -118deg,
+      #f17a2b 0deg,
+      #f19e2d 17deg,
+      #f1cf2f 33deg,
+      #f0d32f 41deg,
+      var(--color-demo-zone-good) 81deg 129deg,
+      #f0d32f 169deg,
+      #f1d330 177deg,
+      #f0a52c 209deg,
+      #f17a2b 236deg,
+      transparent 236deg
     );
-    -webkit-mask: radial-gradient(circle, transparent 65.5px, #000 66px 79px, transparent 79.5px);
-    mask: radial-gradient(circle, transparent 65.5px, #000 66px 79px, transparent 79.5px);
+    -webkit-mask: radial-gradient(circle, transparent 62.25px, #000 62.75px 78.25px, transparent 78.75px);
+    mask: radial-gradient(circle, transparent 62.25px, #000 62.75px 78.25px, transparent 78.75px);
+  }
+  .gauge__cap {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f17a2b;
+  }
+  .gauge__cap--l {
+    top: 104.1px;
+    left: 8.75px;
+  }
+  .gauge__cap--r {
+    top: 104.1px;
+    left: 133.25px;
   }
   .gauge__pointer {
     position: absolute;
@@ -204,12 +234,12 @@ const START = 12;
     left: 0;
     width: 158px;
     height: 158px;
-    transform: rotate(var(--a, 14.6deg));
+    transform: rotate(var(--a, 14.2deg));
     transition: transform 420ms var(--ease-spring);
   }
   .gauge__pointer i {
     position: absolute;
-    top: 17px;
+    top: 18px;
     left: 72.5px;
     width: 13px;
     height: 19px;
@@ -227,17 +257,15 @@ const START = 12;
     justify-content: center;
     width: 98px;
     height: 98px;
-    border: 0.93px solid var(--zone-ink);
     border-radius: 50%;
     background: #fff;
+    box-shadow: 0 0 10px rgb(56 56 40 / 0.07);
     color: var(--zone-text);
     font-size: 32.7px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
-    transition:
-      color var(--duration-base) var(--ease-out),
-      border-color var(--duration-base) var(--ease-out);
+    transition: color var(--duration-base) var(--ease-out);
   }
   .gauge__sign {
     margin-right: 2px;
@@ -282,6 +310,7 @@ const START = 12;
     border: 3px solid var(--color-demo-nutu-primary);
     border-radius: 50%;
     background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
     -webkit-appearance: none;
     appearance: none;
     transition: transform var(--duration-base) var(--ease-spring);
@@ -408,11 +437,11 @@ const START = 12;
     // Scale the app-sized overlay (375px wide) to the phone's rendered width
     new ResizeObserver(() => root.style.setProperty('--s', String(phone.clientWidth / 375))).observe(phone);
 
-    // The arc sweeps 244°, so −100 → −122° and +100 → +122° from the top
+    // The arc sweeps 236°, so −100 → −118° and +100 → +118° from the top
     const render = () => {
       const v = Number(input.value);
       const abs = Math.abs(v);
-      pointer.style.setProperty('--a', `${v * 1.22}deg`);
+      pointer.style.setProperty('--a', `${v * 1.18}deg`);
       value.textContent = String(abs);
       sign.textContent = v > 0 ? '+' : v < 0 ? '−' : '';
       const zone = abs <= 35 ? 'good' : abs <= 60 ? 'mid' : 'off';
