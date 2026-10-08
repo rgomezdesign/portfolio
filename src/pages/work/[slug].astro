@@ -10,20 +10,21 @@ import CaseMeta from '../../components/CaseMeta.astro';
 import CaseSection from '../../components/CaseSection.astro';
 import CaseCallout from '../../components/CaseCallout.astro';
 import CaseScreens from '../../components/CaseScreens.astro';
-import SectionHeader from '../../components/SectionHeader.astro';
-import ProjectCard from '../../components/ProjectCard.astro';
+import GoalDemo from '../../components/GoalDemo.astro';
+import BalanceDemo from '../../components/BalanceDemo.astro';
+import MoreWork from '../../components/MoreWork.astro';
 import { projects } from '../../data/site';
 import { caseStudies } from '../../data/cases';
 
 // Mirrors the Figma case study template ("nutu · Desktop 1440" / "nutu · Mobile 390").
 // Projects without a written case study yet fall back to a short placeholder.
 export function getStaticPaths() {
-  return projects.map((project, i) => ({
+  return projects.map((project) => ({
     params: { slug: project.slug },
-    props: { project, next: projects[(i + 1) % projects.length] },
+    props: { project },
   }));
 }
-const { project, next } = Astro.props;
+const { project } = Astro.props;
 const study = caseStudies[project.slug];
 const year = new Date().getFullYear();
 ---
@@ -60,6 +61,10 @@ const year = new Date().getFullYear();
                 <CaseSection kicker={block.kicker} title={block.title} body={block.body} />
               ) : block.type === 'screens' ? (
                 <CaseScreens screens={block.screens} caption={block.caption} tint={project.tint} />
+              ) : block.type === 'goal-demo' ? (
+                <GoalDemo statement={block.statement} support={block.support} tint={project.tint} />
+              ) : block.type === 'balance-demo' ? (
+                <BalanceDemo caption={block.caption} screens={block.screens} tint={project.tint} />
               ) : (
                 <CaseCallout statement={block.statement} support={block.support} />
               ),
@@ -76,12 +81,7 @@ const year = new Date().getFullYear();
       </header>
     )}
 
-    <section class="case__next" aria-labelledby="next-title">
-      <SectionHeader id="next-title" title="Next project" />
-      <ul class="case__next-grid">
-        <ProjectCard project={next} />
-      </ul>
-    </section>
+    <MoreWork current={project.slug} />
   </main>
 
   <footer class="footer page">
@@ -122,15 +122,6 @@ const year = new Date().getFullYear();
     display: grid;
     gap: var(--space-48);
   }
-  .case__next {
-    display: grid;
-    gap: var(--space-32);
-  }
-  .case__next-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-32);
-  }
   .footer {
     padding-top: var(--space-112);
     padding-bottom: var(--space-48);
@@ -160,12 +151,6 @@ const year = new Date().getFullYear();
     }
     .case__chapter {
       gap: var(--space-32);
-    }
-    .case__next {
-      gap: var(--space-24);
-    }
-    .case__next-grid {
-      grid-template-columns: 1fr;
     }
     .footer {
       padding-top: var(--space-64);

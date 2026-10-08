@@ -41,7 +41,7 @@ export const nutu: CaseStudy = {
   slug: 'nutu',
   eyebrow: 'Product design · Willow Laboratories',
   title: 'nutu',
-  lead: 'Two features that help people stick with healthy habits: goals that count what you actually did, and a future self you unlock by showing up.',
+  lead: 'Two features I designed to help people keep showing up: goals that count what you actually did, and a future self you earn by logging.',
   meta: [
     { label: 'Role', value: 'Product designer' },
     { label: 'Team', value: 'PMs, engineers, health team' },
@@ -56,8 +56,8 @@ export const nutu: CaseStudy = {
         kicker: 'Overview',
         title: 'The problem',
         body: [
-          'nutu started as a nutrition tracker and is growing into a metabolic health platform. The hard part isn’t logging a meal, it’s still logging three weeks later. Better habits take months to show results, so the day-to-day effort can feel like it goes nowhere.',
-          'I designed two features that work on that from both ends: Goals makes short-term progress visible, and Future You shows where your habits are heading.',
+          'nutu began as a nutrition tracker and is growing into a full metabolic health platform. Logging a meal is easy. Still logging three weeks later is the hard part, because better habits take months to show up in the mirror.',
+          'So I came at it from both ends. Goals makes this week’s progress feel real. Future You shows where all those weeks are heading.',
         ],
       },
     ],
@@ -67,20 +67,20 @@ export const nutu: CaseStudy = {
         kicker: '01 · Goals',
         title: 'Goals that count what you actually did',
         body: [
-          'People pick a goal the health team wrote, then make it theirs: how many minutes, how often, and for how long. Every goal reads as one plain sentence, so it’s always clear what you signed up for.',
+          'People start from a goal nutu’s health team wrote, then make it theirs: how long, how often, for how many weeks. Every goal reads back as one plain sentence, so there’s never any doubt about what you signed up for.',
         ],
       },
       { type: 'screens', screens: [s.goalsPick, s.goalsCustomize, s.goalsSet], caption: 'Pick a goal, tune it, done. The sentence updates as the numbers change.' },
       {
-        type: 'callout',
+        type: 'goal-demo',
         statement: '0 of 6, not 0 of 14.',
-        support: '“3 times a week for 2 weeks” counts completions, not calendar days. Missing a Tuesday shouldn’t feel like failing.',
+        support: 'A goal like “3 times a week for 2 weeks” counts the times you showed up, not the days on the calendar. Skipping a Tuesday is part of the plan, not a failure.',
       },
       {
         type: 'section',
         title: 'Progress that feels fair',
         body: [
-          'Progress is grouped by week, and you can tap a past day to catch up on one you forgot. Goals nutu can track on its own fill in from what you log; the rest you check off. Two goals at a time is the cap, enough to build momentum without spreading thin.',
+          'Forgot to log yesterday? Tap the day and catch up. Goals nutu can track on its own fill in from what you log, and the rest are one tap. There’s a cap of two goals at a time: enough to build momentum without spreading yourself thin.',
         ],
       },
       { type: 'screens', screens: [s.goalsDetail, s.goalsAuto, s.goalsComplete], caption: 'A manual goal mid-week, an auto-tracked goal, and the finish.' },
@@ -91,7 +91,7 @@ export const nutu: CaseStudy = {
         kicker: '02 · Future You',
         title: 'A future worth logging for',
         body: [
-          'Future You uses AI to show how your body could look if you keep your current habits. It’s a reward, so it’s earned: log all four habits two weeks in a row and it unlocks. The locked screen does the motivating, with both weeks visible and rings that fill as you go.',
+          'Future You uses AI to picture how your body could change if you keep your current habits. I wanted it to feel like a reward, so it’s earned: log all four habits two weeks in a row and it unlocks. Until then, the locked screen does the motivating, with both weeks in view and rings that fill as you go.',
         ],
       },
       {
@@ -103,7 +103,7 @@ export const nutu: CaseStudy = {
         type: 'section',
         title: 'Designing around real constraints',
         body: [
-          'Generating an image takes time and costs money, so there’s a 24-hour cooldown between runs. Photos need consent, and every result carries a clear AI disclaimer. Instead of hiding those rules, the design explains them when they matter: when the next run opens up, why an upload failed, and what the image is and isn’t. You can add a starting photo while it’s still locked, so nothing gets asked twice.',
+          'Generating an image takes time and money, so there’s a 24-hour cooldown between runs. Photos need consent, and every result carries an AI disclaimer. Rather than bury those rules, I let the design explain them right when they matter: when your next run opens up, why an upload failed, what the image is and isn’t. You can even add a starting photo while it’s still locked, so nothing gets asked twice.',
         ],
       },
       { type: 'screens', screens: [s.fyOnboarding, s.fySetup, s.fyResults], caption: 'Onboarding, choosing how far ahead to look, and the results with the next available time.' },
@@ -114,16 +114,20 @@ export const nutu: CaseStudy = {
         kicker: '03 · What’s next',
         title: 'Making the future adjustable',
         body: [
-          'The next version adds a slider: drag your daily balance and watch the future photo change. Before landing on it, I explored three ways to show where your day ends up: a balance track, a gauge dial, and a count of balanced days.',
+          'The next version adds a slider. Drag your daily balance and watch your future change with it. Before it got there, I tried three ways to show where your day ends up: a balance track, a gauge dial, and a count of balanced days.',
         ],
       },
       { type: 'screens', screens: [s.sliderTrack, s.sliderDial, s.sliderDays], caption: 'Three control studies, each tested against the same day of data.' },
       {
         type: 'section',
         title: 'Where it landed',
-        body: ['The final pairs the gauge’s at-a-glance read with a simple slider underneath. It’s in progress and shipping later this year.'],
+        body: ['The final pairs the gauge’s quick read with a simple slider underneath. It’s still in progress and ships later this year, but you can take the control for a spin below.'],
       },
-      { type: 'screens', screens: [s.sliderResult, s.sliderDragged], caption: 'Your average today (+12), then dragged to +78 to see the other future.' },
+      {
+        type: 'balance-demo',
+        screens: { good: s.sliderResult, off: s.sliderDragged },
+        caption: 'A working sketch of the control. The photo switches to the other future when you leave the green.',
+      },
     ],
     [
       {
@@ -131,7 +135,7 @@ export const nutu: CaseStudy = {
         kicker: '04 · Process',
         title: 'How I worked',
         body: [
-          'I worked with PMs, engineers and nutu’s health team from first flows through handoff. Alongside the screens I wrote the logic for each feature: caps, edge cases, error states, and what day one looks like next to week four, so engineering could build without guessing. Wording and health claims went through the health team, and shared moments like the celebration were designed once and reused.',
+          'I worked side by side with PMs, engineers and nutu’s health team from first flows to handoff. Next to every screen I wrote down the logic: caps, edge cases, error states, what day one looks like next to week four. Engineering could build without guessing, and the health team could check every word and claim. Moments we’d already gotten right, like the celebration, I reused instead of reinventing.',
         ],
       },
     ],
@@ -141,7 +145,8 @@ export const nutu: CaseStudy = {
         kicker: '05 · Outcome',
         title: 'Where it stands',
         body: [
-          'Goals ships this month. The first version of Future You is rolling out now, with the slider update later this year. I’ll add what we learn once there’s real usage to share.',
+          'Goals ships this month, and the first version of Future You is rolling out now, with the slider later this year.',
+          'Next for Goals: letting people set a goal in their own words instead of picking from a list, with nutu helping shape it into something they can track. More on that, and on what we learn from real usage, once it’s out in the world.',
         ],
       },
     ],

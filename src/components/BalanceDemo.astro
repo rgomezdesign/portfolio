@@ -1,0 +1,301 @@
+---
+import { Image } from 'astro:assets';
+import type { Screen } from '../data/cases/types';
+// Mirrors Figma "Demo/Balance" next to a Case/Screen inside the tinted demo panel.
+// A working sketch of the Future You control: gauge + slider, photo swaps when you leave the green.
+interface Props {
+  caption: string;
+  screens: { good: Screen; off: Screen };
+  tint: string;
+}
+const { caption, screens, tint } = Astro.props;
+const START = 12;
+---
+<figure class="balance" data-reveal>
+  <div class="balance__panel" style={`--tint:${tint}`} data-balance-demo>
+    <div class="balance__phone">
+      <Image src={screens.good.src} alt={screens.good.alt} widths={[300, 600]} sizes="(max-width: 767px) 196px, 280px" class="balance__shot" loading="lazy" />
+      <Image src={screens.off.src} alt={screens.off.alt} widths={[300, 600]} sizes="(max-width: 767px) 196px, 280px" class="balance__shot balance__shot--off" loading="lazy" />
+    </div>
+
+    <div class="balance__control">
+      <p class="balance__try t-label-strong">Try it: drag the slider <span aria-hidden="true">↓</span></p>
+      <div class="card">
+        <div class="card__head">
+          <p class="t-label">If you consistently stay here</p>
+          <p class="zone t-caption" data-zone>Balanced</p>
+        </div>
+
+        <div class="gauge" aria-hidden="true">
+          <svg viewBox="0 0 220 120">
+            <defs>
+              <linearGradient id="balance-arc" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="var(--color-demo-zone-off)" />
+                <stop offset="0.3" stop-color="var(--color-demo-zone-mid)" />
+                <stop offset="0.5" stop-color="var(--color-demo-zone-good)" />
+                <stop offset="0.7" stop-color="var(--color-demo-zone-mid)" />
+                <stop offset="1" stop-color="var(--color-demo-zone-off)" />
+              </linearGradient>
+            </defs>
+            <path d="M 10 110 A 100 100 0 0 1 210 110" class="gauge__arc" />
+            <circle r="8" class="gauge__marker" data-marker />
+          </svg>
+          <p class="gauge__value" data-value>+{START}</p>
+        </div>
+
+        <label class="slider">
+          <span class="visually-hidden">Daily balance, from −100 (more burned) to +100 (more eaten)</span>
+          <input type="range" min="-100" max="100" step="1" value={START} data-slider />
+        </label>
+        <div class="slider__labels t-caption" aria-hidden="true">
+          <span>−100<br /><small>more burned</small></span>
+          <span>0</span>
+          <span>+100<br /><small>more eaten</small></span>
+        </div>
+        <p class="card__note t-caption">Anywhere in the green gives the same future. Drift either way and the picture changes.</p>
+      </div>
+    </div>
+  </div>
+  <figcaption class="t-caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .balance {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .balance__panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-64);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .balance__phone {
+    position: relative;
+    flex: 0 1 280px;
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .balance__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 375 / 812;
+    border: 1px solid var(--color-border-default);
+    border-radius: 10cqw;
+    box-shadow: var(--shadow-media);
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .balance__shot--off {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+  .is-off .balance__shot--off {
+    opacity: 1;
+  }
+
+  .balance__control {
+    flex: 0 1 440px;
+    display: grid;
+    gap: var(--space-24);
+  }
+  .balance__try {
+    color: var(--color-accent-text);
+  }
+  .card {
+    display: grid;
+    gap: var(--space-16);
+    padding: var(--space-24);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+  }
+  .card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+  }
+  .zone {
+    flex: none;
+    white-space: nowrap;
+    padding: var(--space-4) var(--space-10);
+    border-radius: var(--radius-full);
+    background: var(--zone, var(--color-demo-zone-good));
+    color: var(--color-text-inverse);
+    font-weight: 500;
+    transition: background-color var(--duration-base) var(--ease-out);
+  }
+  .is-mid .zone {
+    color: var(--color-text-primary);
+  }
+
+  .gauge {
+    position: relative;
+    width: 220px;
+    max-width: 100%;
+    justify-self: center;
+  }
+  .gauge svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  .gauge__arc {
+    fill: none;
+    stroke: url(#balance-arc);
+    stroke-width: 18;
+    stroke-linecap: butt;
+  }
+  .gauge__marker {
+    fill: var(--color-bg-surface);
+    stroke: var(--color-text-primary);
+    stroke-width: 2;
+  }
+  .gauge__value {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    translate: -50% 0;
+    color: var(--zone, var(--color-demo-zone-good));
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  /* Slider */
+  .slider input {
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .slider input::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-bg-subtle);
+    box-shadow: inset 0 0 0 1px var(--color-border-default);
+  }
+  .slider input::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-bg-subtle);
+  }
+  .slider input::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+    margin-top: -11px;
+    border: 2px solid var(--color-text-primary);
+    border-radius: 50%;
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: transform var(--duration-base) var(--ease-spring);
+  }
+  .slider input::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--color-text-primary);
+    border-radius: 50%;
+    background: var(--color-bg-surface);
+  }
+  .slider input:active::-webkit-slider-thumb {
+    transform: scale(1.12);
+  }
+  .slider input:focus-visible {
+    outline: none;
+  }
+  .slider input:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 3px;
+  }
+  .slider__labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: calc(var(--space-8) * -1);
+    line-height: 1.3;
+  }
+  .slider__labels span:last-child {
+    text-align: right;
+  }
+  .slider__labels small {
+    font-size: inherit;
+    color: var(--color-text-tertiary);
+  }
+  .card__note {
+    color: var(--color-text-secondary);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1023px) {
+    .balance__panel {
+      gap: var(--space-32);
+      padding: var(--space-48) var(--space-24);
+    }
+  }
+  @media (max-width: 767px) {
+    .balance__panel {
+      flex-direction: column;
+      gap: var(--space-24);
+      padding: var(--space-32) var(--space-16);
+      border-radius: var(--radius-md);
+    }
+    .balance__phone {
+      flex: none;
+      width: 196px;
+    }
+    .balance__control {
+      flex: none;
+      width: 100%;
+    }
+    .card {
+      padding: var(--space-20);
+    }
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-balance-demo]')) {
+    const input = root.querySelector<HTMLInputElement>('[data-slider]');
+    const marker = root.querySelector<SVGCircleElement>('[data-marker]');
+    const value = root.querySelector<HTMLElement>('[data-value]');
+    const zone = root.querySelector<HTMLElement>('[data-zone]');
+    if (!input || !marker || !value || !zone) continue;
+
+    const ZONES = [
+      { max: 40, label: 'Balanced', color: 'var(--color-demo-zone-good)', cls: '' },
+      { max: 70, label: 'Drifting', color: 'var(--color-demo-zone-mid)', cls: 'is-mid' },
+      { max: 101, label: 'Off balance', color: 'var(--color-demo-zone-off)', cls: 'is-off' },
+    ];
+
+    const render = () => {
+      const v = Number(input.value);
+      const angle = Math.PI + Math.PI * ((v + 100) / 200);
+      marker.setAttribute('cx', String(110 + 100 * Math.cos(angle)));
+      marker.setAttribute('cy', String(110 + 100 * Math.sin(angle)));
+      value.textContent = v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '0';
+      const z = ZONES.find((zz) => Math.abs(v) <= zz.max) ?? ZONES[2];
+      zone.textContent = z.label;
+      root.style.setProperty('--zone', z.color);
+      root.classList.toggle('is-mid', z.cls === 'is-mid');
+      // The photo only changes once you leave the green (mid or off)
+      root.classList.toggle('is-off', z.cls !== '');
+      input.setAttribute('aria-valuetext', `${value.textContent}, ${z.label}`);
+    };
+    input.addEventListener('input', render);
+    render();
+  }
+</script>

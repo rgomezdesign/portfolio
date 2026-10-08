@@ -6,7 +6,10 @@ export type Screen = { src: ImageMetadata; alt: string };
 export type Block =
   | { type: 'section'; kicker?: string; title: string; body: string[] }
   | { type: 'screens'; screens: Screen[]; caption: string }
-  | { type: 'callout'; statement: string; support: string };
+  | { type: 'callout'; statement: string; support: string }
+  // Interactive demos that recreate a design decision (Figma "Demo/…" components)
+  | { type: 'goal-demo'; statement: string; support: string }
+  | { type: 'balance-demo'; caption: string; screens: { good: Screen; off: Screen } };
 
 export type CaseStudy = {
   slug: string;

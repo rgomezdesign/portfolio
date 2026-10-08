@@ -1,0 +1,370 @@
+---
+// Mirrors Figma "Demo/Goal Tracker" inside the tinted demo panel.
+// A working recreation of the Goals decision: progress counts completions, not calendar days.
+interface Props {
+  statement: string;
+  support: string;
+  tint: string;
+}
+const { statement, support, tint } = Astro.props;
+const weeks = [
+  [true, true, true],
+  [true, false, false],
+];
+const RING = 2 * Math.PI * 12; // r = 12
+---
+<div class="demo" style={`--tint:${tint}`} data-reveal>
+  <div class="demo__text">
+    <blockquote class="callout">
+      <p class="t-h2">{statement}</p>
+      <p class="t-body">{support}</p>
+    </blockquote>
+    <p class="demo__try t-label-strong">Try it: tap a day <span class="demo__try-arrow" aria-hidden="true">→</span></p>
+  </div>
+
+  <div class="goal" data-goal-demo data-target="6">
+    <div class="goal__head">
+      <p class="t-caption">Exercise</p>
+      <p class="goal__sentence t-label">I will choose a new physical activity and do 10 min, 3 times a week, for 2 weeks.</p>
+    </div>
+
+    <div class="goal__progress">
+      <svg class="goal__ring" viewBox="0 0 28 28" aria-hidden="true">
+        <circle cx="14" cy="14" r="12" class="goal__ring-track" />
+        <circle cx="14" cy="14" r="12" class="goal__ring-fill" style={`--c:${RING}`} data-goal-ring />
+      </svg>
+      <p class="t-h3" aria-live="polite"><span data-goal-count>4</span> of 6</p>
+      <p class="goal__hint t-caption" data-goal-hint>Tap a day</p>
+      <p class="goal__done t-label-strong" aria-hidden="true"><span class="goal__check">✓</span> Goal complete</p>
+      <span class="confetti" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i style={`--k:${i}`}></i>)}</span>
+    </div>
+
+    <div class="goal__weeks">
+      {weeks.map((days, w) => (
+        <div class="goal__week">
+          <p class="t-caption">Week {w + 1}</p>
+          <div class="goal__slots">
+            {days.map((on, d) => (
+              <button type="button" class="slot t-label" aria-pressed={on ? 'true' : 'false'} aria-label={`Week ${w + 1}, day ${d + 1}`} data-goal-slot>
+                <span>{d + 1}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="goal__compare">
+      <div class="meter">
+        <p class="meter__row"><span class="t-caption">Counting completions</span><span class="t-label-strong"><span data-goal-count>4</span> of 6</span></p>
+        <span class="meter__track"><span class="meter__bar meter__bar--good" data-goal-bar="6" style="--w:66.67%"></span></span>
+      </div>
+      <div class="meter">
+        <p class="meter__row"><span class="t-caption">Counting calendar days</span><span class="t-label-strong"><span data-goal-count>4</span> of 14</span></p>
+        <span class="meter__track"><span class="meter__bar" data-goal-bar="14" style="--w:28.57%"></span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 520px);
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-64);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .demo__text {
+    display: grid;
+    gap: var(--space-24);
+  }
+  .callout {
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+    padding-left: var(--space-24);
+    border-left: 2px solid var(--color-accent-brand);
+  }
+  .demo__try {
+    color: var(--color-accent-text);
+  }
+  .demo__try-arrow {
+    display: inline-block;
+    animation: nudge 1.6s var(--ease-out) infinite;
+  }
+  @keyframes nudge {
+    0%,
+    60%,
+    100% {
+      transform: translateX(0);
+    }
+    30% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Card */
+  .goal {
+    position: relative;
+    display: grid;
+    gap: var(--space-20);
+    padding: var(--space-24);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+    transition: box-shadow var(--duration-slow) var(--ease-out);
+  }
+  .goal__head {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .goal__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+  }
+  .goal__hint {
+    margin-left: auto;
+  }
+  .goal__ring {
+    width: 28px;
+    height: 28px;
+    rotate: -90deg;
+  }
+  .goal__ring circle {
+    fill: none;
+    stroke-width: 4;
+  }
+  .goal__ring-track {
+    stroke: var(--color-border-default);
+  }
+  .goal__ring-fill {
+    stroke: var(--color-demo-nutu-primary);
+    stroke-linecap: round;
+    stroke-dasharray: var(--c);
+    stroke-dashoffset: calc(var(--c) * (1 - var(--p, 0.6667)));
+    transition: stroke-dashoffset var(--duration-slow) var(--ease-spring);
+  }
+  .goal__weeks {
+    display: grid;
+    gap: var(--space-12);
+  }
+  .goal__week {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .goal__slots {
+    display: flex;
+    gap: var(--space-8);
+  }
+  .slot {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .slot:hover {
+    border-color: var(--color-demo-nutu-primary);
+  }
+  .slot:active {
+    transform: scale(0.92);
+  }
+  .slot[aria-pressed='true'] {
+    border-color: var(--color-demo-nutu-primary);
+    background: var(--color-demo-nutu-primary);
+    color: var(--color-text-inverse);
+  }
+  .slot[aria-pressed='true'] span {
+    animation: pop 360ms var(--ease-spring);
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.6);
+    }
+  }
+
+  .goal__compare {
+    display: grid;
+    gap: var(--space-12);
+    padding-top: var(--space-20);
+    border-top: 1px solid var(--color-border-default);
+  }
+  .meter {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .meter__row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-12);
+  }
+  .meter__row .t-caption {
+    color: var(--color-text-secondary);
+  }
+  .meter__track {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+  }
+  .meter__bar {
+    display: block;
+    width: var(--w, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-border-strong);
+    transition: width var(--duration-slow) var(--ease-out);
+  }
+  .meter__bar--good {
+    background: var(--color-demo-nutu-primary);
+  }
+
+  /* Completion moment */
+  .goal__progress {
+    position: relative;
+  }
+  .goal__done {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -15px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-12) var(--space-4) var(--space-4);
+    border-radius: var(--radius-full);
+    background: var(--color-demo-nutu-primary);
+    color: var(--color-text-inverse);
+    opacity: 0;
+    transform: translateY(-6px) scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-slow) var(--ease-spring);
+  }
+  .goal__check {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.18);
+    font-size: 12px;
+  }
+  .goal.is-complete .goal__done {
+    opacity: 1;
+    transform: none;
+  }
+  .goal.is-complete .goal__hint {
+    visibility: hidden;
+  }
+  .confetti {
+    position: absolute;
+    top: 50%;
+    right: 64px;
+    width: 0;
+    pointer-events: none;
+  }
+  .confetti i {
+    position: absolute;
+    width: 6px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--color-demo-zone-mid);
+    opacity: 0;
+  }
+  .confetti i:nth-child(3n) {
+    background: var(--color-demo-nutu-primary);
+  }
+  .confetti i:nth-child(3n + 1) {
+    background: var(--color-accent-brand);
+  }
+  .goal.is-celebrating .confetti i {
+    animation: burst 900ms var(--ease-out) both;
+    animation-delay: calc(var(--k) * 18ms);
+  }
+  @keyframes burst {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc((var(--k) - 4.5) * 14px), calc(-40px + var(--k) * 9px)) rotate(calc(var(--k) * 70deg));
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .demo {
+      grid-template-columns: minmax(0, 520px);
+      gap: var(--space-32);
+      padding: var(--space-48) var(--space-24);
+    }
+  }
+  @media (max-width: 767px) {
+    .demo {
+      gap: var(--space-24);
+      padding: var(--space-32) var(--space-16);
+      border-radius: var(--radius-md);
+    }
+    .demo__try-arrow {
+      rotate: 90deg;
+    }
+    .goal {
+      padding: var(--space-20);
+    }
+  }
+</style>
+
+<script>
+  for (const card of document.querySelectorAll<HTMLElement>('[data-goal-demo]')) {
+    const target = Number(card.dataset.target);
+    const slots = [...card.querySelectorAll<HTMLButtonElement>('[data-goal-slot]')];
+    const counts = card.querySelectorAll<HTMLElement>('[data-goal-count]');
+    const ring = card.querySelector<SVGElement>('[data-goal-ring]');
+    const bars = card.querySelectorAll<HTMLElement>('[data-goal-bar]');
+    const hint = card.querySelector<HTMLElement>('[data-goal-hint]');
+    let wasComplete = false;
+
+    const render = () => {
+      const done = slots.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
+      counts.forEach((c) => (c.textContent = String(done)));
+      ring?.style.setProperty('--p', String(done / target));
+      bars.forEach((b) => b.style.setProperty('--w', `${(done / Number(b.dataset.goalBar)) * 100}%`));
+      if (hint) hint.textContent = done === 0 ? 'Tap a day' : `${target - done} to go`;
+      const complete = done === target;
+      card.classList.toggle('is-complete', complete);
+      if (complete && !wasComplete) {
+        card.classList.remove('is-celebrating');
+        void card.offsetWidth; // restart the burst
+        card.classList.add('is-celebrating');
+      }
+      wasComplete = complete;
+    };
+
+    for (const slot of slots) {
+      slot.addEventListener('click', () => {
+        slot.setAttribute('aria-pressed', slot.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+        render();
+      });
+    }
+    render();
+  }
+</script>

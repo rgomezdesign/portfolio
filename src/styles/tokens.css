@@ -21,6 +21,12 @@
   --primitive-tint-sage: #e3eae5;
   --primitive-tint-stone: #eeeae4;
   --primitive-tint-butter: #f1edd6;
+  --primitive-tint-peach: #f6e7dc;
+  --primitive-nutu-green: #496257;
+  --primitive-nutu-surface: #f6f7f2;
+  --primitive-zone-green: #5e9b4c;
+  --primitive-zone-yellow: #d9b526;
+  --primitive-zone-orange: #e8742a;
 
   /* Color — semantic */
   --color-bg-page: var(--primitive-neutral-25);
@@ -43,10 +49,16 @@
   --color-accent-text: var(--primitive-orange-700);
   --color-accent-subtle: var(--primitive-orange-50);
   --color-focus-ring: var(--primitive-orange-500);
-  --color-project-nutu: var(--primitive-tint-indigo);
+  --color-project-nutu: var(--primitive-tint-peach);
   --color-project-palazzo: var(--primitive-tint-sage);
   --color-project-nuvem: var(--primitive-tint-stone);
   --color-project-sound-garden: var(--primitive-tint-butter);
+  /* Interactive case-study demos (recreate nutu app colors) */
+  --color-demo-nutu-primary: var(--primitive-nutu-green);
+  --color-demo-nutu-surface: var(--primitive-nutu-surface);
+  --color-demo-zone-good: var(--primitive-zone-green);
+  --color-demo-zone-mid: var(--primitive-zone-yellow);
+  --color-demo-zone-off: var(--primitive-zone-orange);
 
   /* Space (8pt) */
   --space-2: 2px;

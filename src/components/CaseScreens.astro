@@ -14,8 +14,8 @@ const sizes = size === 'cover' ? '(max-width: 767px) 220px, 300px' : '(max-width
 ---
 <figure class:list={['screens', `screens--${size}`]} data-reveal={eager ? undefined : ''}>
   <div class="screens__row" style={`--tint:${tint}`} tabindex={0} role="group" aria-label={caption ?? 'App screens'}>
-    {screens.map((s) => (
-      <div class="screen">
+    {screens.map((s, i) => (
+      <div class:list={['screen', { enter: eager }]} style={`--i:${eager ? i + 5 : i}`}>
         <Image src={s.src} alt={s.alt} widths={[300, 600]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} class="screen__img" />
       </div>
     ))}
@@ -39,6 +39,27 @@ const sizes = size === 'cover' ? '(max-width: 767px) 220px, 300px' : '(max-width
   }
   .screens--cover .screens__row {
     padding-block: var(--space-80);
+  }
+  /* Motion: the row stays put, the screens rise in one after another */
+  :global(.js-reveal) .screens[data-reveal]:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+  :global(.js-reveal) .screens[data-reveal] .screen {
+    transition:
+      opacity 700ms var(--ease-out),
+      transform 900ms var(--ease-spring);
+    transition-delay: calc(var(--i, 0) * 110ms);
+  }
+  :global(.js-reveal) .screens[data-reveal]:not(.is-in) .screen {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  .screen__img {
+    transition: transform 520ms var(--ease-out);
+  }
+  .screen:hover .screen__img {
+    transform: translateY(-6px);
   }
   .screens__row:focus-visible {
     outline-offset: 4px;
