@@ -6,11 +6,15 @@ interface Props {
   url: string;
   caption: string;
   tint: string;
+  /** One line under the load button */
+  hint?: string;
+  /** Accessible name for the embedded site */
+  title?: string;
 }
-const { src, url, caption, tint } = Astro.props;
+const { src, url, caption, tint, hint = 'Runs right here. Scroll around and try it out.', title = 'Live site' } = Astro.props;
 ---
 <figure class="live" data-reveal>
-  <div class="live__panel" style={`--tint:${tint}`} data-live>
+  <div class="live__panel" style={`--tint:${tint}`} data-live data-title={title}>
     <div class="live__top">
       <p class="live__try t-label-strong">Try it: this is the real site <span aria-hidden="true">↓</span></p>
       <div class="presets" role="group" aria-label="Preview size">
@@ -27,7 +31,7 @@ const { src, url, caption, tint } = Astro.props;
       <div class="window__view" data-view>
         <button type="button" class="poster" data-load>
           <span class="poster__label t-label-strong">Load the live site</span>
-          <span class="t-caption">Runs right here. Scroll, open a chair, try the menu.</span>
+          <span class="t-caption">{hint}</span>
         </button>
       </div>
     </div>
@@ -232,7 +236,7 @@ const { src, url, caption, tint } = Astro.props;
     load.addEventListener('click', () => {
       frame = document.createElement('iframe');
       frame.src = src;
-      frame.title = 'Nuvem live site';
+      frame.title = root.dataset.title ?? 'Live site';
       frame.loading = 'lazy';
       load.remove();
       view.append(frame);

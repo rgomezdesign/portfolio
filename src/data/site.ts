@@ -1,7 +1,7 @@
 import type { ImageMetadata } from 'astro';
 import palazzo from '../assets/work/palazzo.jpg';
 import nuvem from '../assets/work/nuvem/home-desktop.png';
-import soundGarden from '../assets/work/sound-garden.png';
+import etlHome from '../assets/work/eltoroloco/after-home-desktop.jpg';
 import nutuGoals from '../assets/work/nutu/goals-detail-after.png';
 import nutuUnlocked from '../assets/work/nutu/fy-unlocked.png';
 import nutuResults from '../assets/work/nutu/fy-results.png';
@@ -61,12 +61,12 @@ export const projects: Project[] = [
     media: { kind: 'browser', image: nuvem, alt: 'The Nuvem homepage: “The Nuvem Collection” over a carousel of four chairs' },
   },
   {
-    slug: 'sound-garden',
-    title: 'Sound Garden',
-    summary: 'A speaker that doubles as a planter, from 3D model to launch site',
-    meta: ['Product & 3D', 'Concept', '2024'],
-    tint: 'var(--color-project-sound-garden)',
-    media: { kind: 'browser', image: soundGarden, alt: 'Sound Garden launch site with a 3D render of the Eternal M6 speaker planter' },
+    slug: 'el-toro-loco',
+    title: 'El Toro Loco Grill',
+    summary: 'A taqueria’s website and pickup ordering, redesigned from the order up',
+    meta: ['Web & ordering', 'Concept', '2025 — 2026'],
+    tint: 'var(--color-project-eltoroloco)',
+    media: { kind: 'browser', image: etlHome, alt: 'El Toro Loco concept homepage: “Bold flavor, made fresh daily.” over street tacos' },
   },
 ];
 

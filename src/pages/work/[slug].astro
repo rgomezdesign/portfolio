@@ -81,7 +81,7 @@ const year = new Date().getFullYear();
               ) : block.type === 'compare' ? (
                 <CompareDemo before={block.before} after={block.after} caption={block.caption} tint={project.tint} />
               ) : block.type === 'live' ? (
-                <LiveSite src={block.src} url={block.url} caption={block.caption} tint={project.tint} />
+                <LiveSite src={block.src} url={block.url} caption={block.caption} hint={block.hint} title={block.title} tint={project.tint} />
               ) : block.type === 'balance-demo' ? (
                 <BalanceDemo caption={block.caption} screens={block.screens} tint={project.tint} />
               ) : (

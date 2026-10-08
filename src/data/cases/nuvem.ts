@@ -124,6 +124,8 @@ export const nuvem: CaseStudy = {
         src: LIVE,
         url: 'rgomezdesign.github.io/nuvem',
         caption: 'The live site, running right here. Scroll, open a chair, or switch to phone.',
+        hint: 'Runs right here. Scroll, open a chair, try the menu.',
+        title: 'Nuvem live site',
       },
       {
         type: 'screens',

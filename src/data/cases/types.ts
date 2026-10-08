@@ -18,7 +18,7 @@ export type Block =
   // Drag to compare two aligned images (e.g. wireframe vs final)
   | { type: 'compare'; before: Screen & { label: string }; after: Screen & { label: string }; caption: string }
   // The real site, embedded and usable, with desktop/phone views
-  | { type: 'live'; src: string; url: string; caption: string };
+  | { type: 'live'; src: string; url: string; caption: string; hint?: string; title?: string };
 
 export type Cover = { kind: 'phones'; screens: Screen[] } | { kind: 'browser'; shot: Screen; url?: string; phone?: Screen };
 
