@@ -1,4 +1,5 @@
 @AGENTS.md
+@PROJECT-BRIEF.md
 
 ## Design Work
 

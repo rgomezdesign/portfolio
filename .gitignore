@@ -5,3 +5,6 @@ dist/
 .env
 .DS_Store
 .next/
+
+# Local project brief for collaborators (kept off GitHub)
+PROJECT-BRIEF.md
