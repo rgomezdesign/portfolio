@@ -88,14 +88,14 @@ export const experience = [
   {
     company: 'Palazzo Salon',
     years: '2023',
-    role: 'UI/UX Designer, freelance',
+    role: 'Web Designer, freelance',
     description:
       'Redesigned the salon’s website so services are easier to find and the brand feels true to the salon, with a responsive layout that works across every device.',
   },
   {
     company: 'Carrera Effect',
     years: '2019 — 2020',
-    role: 'Product & Brand Designer, freelance',
+    role: 'Brand & Web Designer, freelance',
     description:
       'Redesigned the client’s website for a better experience and a more consistent brand, then created branding, promotional pieces, and merchandise for digital and print.',
   },
