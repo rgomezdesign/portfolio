@@ -9,7 +9,7 @@ import SectionHeader from '../components/SectionHeader.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ExperienceItem from '../components/ExperienceItem.astro';
 import CopyEmail from '../components/CopyEmail.astro';
-import { site, hero, projects, about, experience } from '../data/site';
+import { site, hero, projects, about, experience, homeLayout } from '../data/site';
 const year = new Date().getFullYear();
 ---
 <Base>
@@ -32,7 +32,7 @@ const year = new Date().getFullYear();
     <section class="work" id="work" aria-labelledby="work-title">
       <div data-reveal><SectionHeader id="work-title" title="Selected work" /></div>
       <ul class="work__grid">
-        {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+        {projects.map((p, i) => <ProjectCard project={p} index={i} featured={homeLayout === 'featured' && i === 0} />)}
       </ul>
     </section>
 

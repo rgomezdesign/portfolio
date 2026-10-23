@@ -18,6 +18,7 @@ import ResizeDemo from '../../components/ResizeDemo.astro';
 import CaseGallery from '../../components/CaseGallery.astro';
 import CompareDemo from '../../components/CompareDemo.astro';
 import LiveSite from '../../components/LiveSite.astro';
+import ChatDemo from '../../components/ChatDemo.astro';
 import { projects } from '../../data/site';
 import { caseStudies } from '../../data/cases';
 
@@ -39,12 +40,15 @@ const year = new Date().getFullYear();
   </header>
   <PillNav base="/" />
 
-  <main id="main" class="page case">
+  <main id="main" class="page case" data-protect-images>
     {study ? (
       <>
         <header class="case__header">
           <div class="enter" style="--i:0"><BackLink /></div>
-          <div class="enter" style="--i:1"><Eyebrow text={study.eyebrow} /></div>
+          <div class="case__eyebrow enter" style="--i:1">
+            <Eyebrow text={study.eyebrow} />
+            {study.status && <span class="case__status t-caption">{study.status}</span>}
+          </div>
           <h1 class="t-display enter" style="--i:2">{study.title}</h1>
           <p class="case__lead t-lead enter" style="--i:3">{study.lead}</p>
           <div class="enter" style="--i:4"><CaseMeta items={study.meta} /></div>
@@ -79,7 +83,9 @@ const year = new Date().getFullYear();
               ) : block.type === 'gallery' ? (
                 <CaseGallery images={block.images} caption={block.caption} layout={block.layout} tint={project.tint} />
               ) : block.type === 'compare' ? (
-                <CompareDemo before={block.before} after={block.after} caption={block.caption} tint={project.tint} />
+                <CompareDemo before={block.before} after={block.after} caption={block.caption} size={block.size} tint={project.tint} />
+              ) : block.type === 'chat-demo' ? (
+                <ChatDemo statement={block.statement} support={block.support} tint={project.tint} />
               ) : block.type === 'live' ? (
                 <LiveSite src={block.src} url={block.url} caption={block.caption} hint={block.hint} title={block.title} tint={project.tint} />
               ) : block.type === 'balance-demo' ? (
@@ -110,7 +116,45 @@ const year = new Date().getFullYear();
   <TabBar base="/" />
 </Base>
 
+<script>
+  // Case study images: no right-click "Save image" and no drag-to-desktop. (Screenshots can't be blocked.)
+  const main = document.querySelector<HTMLElement>('[data-protect-images]');
+  const isImage = (t: EventTarget | null) => t instanceof Element && !!t.closest('img, picture');
+  main?.addEventListener('contextmenu', (e) => isImage(e.target) && e.preventDefault());
+  main?.addEventListener('dragstart', (e) => isImage(e.target) && e.preventDefault());
+</script>
+
 <style>
+  .case :global(img) {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  .case__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-12);
+  }
+  /* Mirrors Figma "Tag", with a dot for status */
+  .case__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+  .case__status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent-brand);
+  }
   .top {
     position: absolute;
     top: 46px;

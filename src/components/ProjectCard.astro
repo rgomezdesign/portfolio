@@ -6,12 +6,14 @@ import type { Project } from '../data/site';
 interface Props {
   project: Project;
   index?: number;
+  /** Full-width card at the top of the grid: media and text side by side (stacks on phones) */
+  featured?: boolean;
 }
-const { project, index = 0 } = Astro.props;
+const { project, index = 0, featured = false } = Astro.props;
 const { slug, title, summary, meta, tint, media } = project;
 ---
-<li class="card-item" data-reveal style={`--i:${index % 2}`}>
-  <a class="card" href={`/work/${slug}`}>
+<li class:list={['card-item', { 'card-item--featured': featured }]} data-reveal style={`--i:${index % 2}`}>
+  <a class:list={['card', { 'card--featured': featured }]} href={`/work/${slug}`}>
     <div class="card__media" style={`--tint:${tint}`}>
       {media.kind === 'browser' ? (
         <div class="browser">
@@ -37,7 +39,7 @@ const { slug, title, summary, meta, tint, media } = project;
     </div>
     <div class="card__text">
       <div class="card__title-row">
-        <h3 class="t-h3">{title}</h3>
+        <h3 class:list={[featured ? 't-h2' : 't-h3']}>{title}</h3>
         <Icon name="arrow-right" size={20} class="card__arrow" />
       </div>
       <p class="t-body">{summary}</p>
@@ -181,6 +183,22 @@ const { slug, title, summary, meta, tint, media } = project;
     background: var(--color-bg-subtle);
     color: var(--color-text-secondary);
     line-height: 1.4;
+  }
+
+  /* Featured: spans both columns, media left and text right */
+  @media (min-width: 768px) {
+    .card-item--featured {
+      grid-column: 1 / -1;
+    }
+    .card--featured {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+      gap: var(--space-48);
+    }
+    .card--featured .card__text {
+      gap: var(--space-12);
+      max-width: 440px;
+    }
   }
 
   @media (max-width: 767px) {

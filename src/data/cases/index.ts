@@ -3,5 +3,6 @@ import { nutu } from './nutu';
 import { palazzo } from './palazzo';
 import { nuvem } from './nuvem';
 import { eltoroloco } from './eltoroloco';
+import { tend } from './tend';
 
-export const caseStudies: Record<string, CaseStudy> = { nutu, 'palazzo-salon': palazzo, nuvem, 'el-toro-loco': eltoroloco };
+export const caseStudies: Record<string, CaseStudy> = { nutu, 'palazzo-salon': palazzo, nuvem, 'el-toro-loco': eltoroloco, tend };

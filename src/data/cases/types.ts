@@ -16,7 +16,9 @@ export type Block =
   // Process images in a tinted panel (moodboards, studies, renders)
   | { type: 'gallery'; images: Screen[]; caption: string; layout?: 'single' | 'row' }
   // Drag to compare two aligned images (e.g. wireframe vs final)
-  | { type: 'compare'; before: Screen & { label: string }; after: Screen & { label: string }; caption: string }
+  | { type: 'compare'; before: Screen & { label: string }; after: Screen & { label: string }; caption: string; size?: 'wide' | 'phone' }
+  // tend: a working recreation of the chat box ("Emma paid $60 cash" → confirm → saved)
+  | { type: 'chat-demo'; statement: string; support: string }
   // The real site, embedded and usable, with desktop/phone views
   | { type: 'live'; src: string; url: string; caption: string; hint?: string; title?: string };
 
@@ -27,6 +29,8 @@ export type CaseStudy = {
   eyebrow: string;
   title: string;
   lead: string;
+  /** Shown as a small label next to the eyebrow, e.g. "In progress" */
+  status?: string;
   meta: { label: string; value: string }[];
   live?: { href: string; label: string };
   cover: Cover;

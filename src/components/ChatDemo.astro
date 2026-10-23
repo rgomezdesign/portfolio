@@ -1,0 +1,814 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+// Mirrors Figma "Demo/Chat": a working recreation of tend's Today screen + chat box.
+// Styles are copied from the tend prototype (its tokens, Plus Jakarta Sans), scoped to .tend.
+// Like the real app it only understands the text, then asks before saving. This demo handles payments only.
+interface Props {
+  statement: string;
+  support: string;
+  tint: string;
+}
+const { statement, support, tint } = Astro.props;
+const suggestions = ['Emma paid $60 cash', 'Jake paid $60 Zelle', 'Sofia paid $45 Venmo'];
+const icon = {
+  home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  calendar: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+  wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+  more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+  arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+};
+const svg = (paths: string, size = 22) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+---
+<div class="demo" style={`--tint:${tint}`} data-reveal data-chat-demo>
+  <div class="demo__text">
+    <blockquote class="callout">
+      <p class="t-h2">{statement}</p>
+      <p class="t-body">{support}</p>
+    </blockquote>
+
+    <div class="try">
+      <p class="try__label t-label-strong">Try it: tap one, or type your own <span class="try__arrow" aria-hidden="true">→</span></p>
+      <div class="try__chips">
+        {suggestions.map((s) => (
+          <button type="button" class="chip t-label" data-suggest={s}>“{s}”</button>
+        ))}
+      </div>
+      <p class="try__note t-caption">This demo only understands payments. The prototype also adds clients, appointments, expenses and mileage.</p>
+      <button type="button" class="reset t-label" data-reset hidden>Start over</button>
+    </div>
+  </div>
+
+  <figure class="replica">
+    <div class="tend" data-app>
+      <div class="tend__page">
+        <header class="tend__head">
+          <p class="t-caption brand" data-date></p>
+          <h3 class="t-title-l">Today</h3>
+          <p class="t-body-s muted" data-collect></p>
+        </header>
+        <section class="card" aria-label="Who owes you">
+          <header class="card-header">
+            <h4 class="t-label muted">Who owes you</h4>
+            <span class="t-body-s link">See all</span>
+          </header>
+          <ul class="rows" data-rows aria-live="polite"></ul>
+          <p class="empty t-body-s muted" data-empty hidden>Everyone’s paid up.</p>
+        </section>
+      </div>
+
+      <div class="scrim" data-scrim hidden></div>
+      <div class="panel-slot" data-panel aria-live="polite"></div>
+      <div class="toast" data-toast hidden>
+        <span>Payment saved</span>
+        <button type="button" data-undo>Undo</button>
+      </div>
+
+      <div class="bottom-panel" data-bar>
+        <form class="chat-bar" data-form>
+          <input data-input placeholder="Tell tend…" aria-label="Tell tend…" autocomplete="off" enterkeyhint="send" maxlength="60" />
+          <button type="submit" class="chat-send" aria-label="Send" data-send hidden set:html={svg(icon.arrowUp, 20)} />
+        </form>
+        <nav class="nav-pill" aria-hidden="true">
+          <span class="nav-item is-active"><Fragment set:html={svg(icon.home)} /><span>Today</span></span>
+          <span class="nav-item" set:html={svg(icon.users)} />
+          <span class="nav-item" set:html={svg(icon.calendar)} />
+          <span class="nav-item" set:html={svg(icon.wallet)} />
+          <span class="nav-item" set:html={svg(icon.more)} />
+        </nav>
+      </div>
+    </div>
+    <figcaption class="t-caption">Recreated from the tend prototype</figcaption>
+  </figure>
+</div>
+
+<style>
+  /* ---------- Portfolio side (same layout as the nutu Goals demo) ---------- */
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 375px);
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-80);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .demo__text {
+    display: grid;
+    gap: var(--space-32);
+  }
+  .callout {
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+    padding-left: var(--space-24);
+    border-left: 2px solid var(--color-accent-brand);
+  }
+  .try {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-12);
+  }
+  .try__label {
+    color: var(--color-accent-text);
+  }
+  .try__arrow {
+    display: inline-block;
+    animation: nudge 1.6s var(--ease-out) infinite;
+  }
+  @keyframes nudge {
+    0%,
+    60%,
+    100% {
+      transform: translateX(0);
+    }
+    30% {
+      transform: translateX(4px);
+    }
+  }
+  .try__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+  .chip {
+    min-height: 40px;
+    padding: 0 var(--space-16);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition:
+      border-color var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+  .chip:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-1px);
+  }
+  .chip:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+  }
+  .try__note {
+    max-width: 360px;
+    color: var(--color-text-secondary);
+  }
+  .reset {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .replica {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--space-12);
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+  .replica figcaption {
+    color: var(--color-text-secondary);
+  }
+
+  /* ---------- tend side: values copied from the prototype's tokens.css / components.css ---------- */
+  .tend {
+    --t-text: #121826;
+    --t-muted: #5b6270;
+    --t-brand: #08739a;
+    --t-brand-hover: #075e7e;
+    --t-brand-subtle: #e1eef3;
+    --t-brand-inverse: #7fbdd6;
+    --t-subtle: #f5f6f8;
+    --t-muted-bg: #edeff2;
+    --t-border: #e6e8ec;
+    --t-border-strong: #d1d5db;
+    --t-icon: #3f4652;
+    --t-owes-bg: #fdefd9;
+    --t-owes: #9a4a00;
+    --t-overdue-bg: #fdebec;
+    --t-overdue: #c0262d;
+    --t-inverse: #121826;
+    --t-shadow: 0 4px 16px rgba(18, 24, 38, 0.08), 0 1px 3px rgba(18, 24, 38, 0.06);
+    position: relative;
+    width: 375px;
+    max-width: 100%;
+    height: 680px;
+    overflow: hidden;
+    border: 1px solid var(--t-border);
+    border-radius: 36px;
+    background: #fff;
+    box-shadow: var(--shadow-media);
+    color: var(--t-text);
+    font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+    text-align: left;
+  }
+  .tend * {
+    box-sizing: border-box;
+  }
+  .tend h3,
+  .tend h4,
+  .tend p,
+  .tend ul {
+    margin: 0;
+    padding: 0;
+  }
+  .tend .t-title-l { font-size: 30px; line-height: 36px; letter-spacing: -0.02em; font-weight: 600; }
+  .tend .t-title-s { font-size: 18px; line-height: 24px; letter-spacing: -0.005em; font-weight: 600; }
+  .tend .t-body-strong { font-size: 16px; line-height: 24px; font-weight: 600; }
+  .tend .t-body-s { font-size: 14px; line-height: 20px; font-weight: 400; }
+  .tend .t-label { font-size: 13px; line-height: 18px; font-weight: 600; }
+  .tend .t-caption { font-size: 12px; line-height: 16px; letter-spacing: 0.005em; font-weight: 600; }
+  .tend .muted { color: var(--t-muted); }
+  .tend .brand { color: var(--t-brand); }
+  .tend .link { color: var(--t-brand); font-weight: 600; }
+  .tend__page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 48px 16px 0;
+  }
+  .tend__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--t-subtle);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px 4px;
+  }
+  .rows {
+    list-style: none;
+  }
+  .empty {
+    padding: 12px 8px;
+  }
+  .tend :global(.row) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 12px 8px;
+    border-radius: 8px;
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease,
+      background-color 400ms ease;
+  }
+  .tend :global(.row.is-leaving) {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  .tend :global(.row.is-updated) {
+    background: var(--t-brand-subtle);
+  }
+  .tend :global(.avatar) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--t-brand-subtle);
+    color: var(--t-brand);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tend :global(.row-text) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .tend :global(.row-trailing) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .tend :global(.num) {
+    font-variant-numeric: tabular-nums;
+  }
+  .tend :global(.pill) {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+  }
+  .tend :global(.pill-owes) { background: var(--t-owes-bg); color: var(--t-owes); }
+  .tend :global(.pill-overdue) { background: var(--t-overdue-bg); color: var(--t-overdue); }
+
+  /* Bottom Bar: one floating panel, chat field on top, nav pill below */
+  .bottom-panel {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 24px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+    border: 1px solid var(--t-border);
+    border-radius: 24px;
+    background: rgb(255 255 255 / 0.92);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--t-shadow);
+  }
+  .chat-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    margin: 0;
+    padding: 0 4px 0 20px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--t-subtle);
+  }
+  .chat-bar:focus-within {
+    border-color: var(--t-brand);
+  }
+  .chat-bar input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--t-text);
+    font: inherit;
+    font-size: 16px;
+  }
+  .chat-bar input::placeholder {
+    color: var(--t-brand);
+  }
+  .chat-send {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--t-brand);
+    color: #fff;
+    cursor: pointer;
+  }
+  .chat-send[hidden] {
+    display: none;
+  }
+  .nav-pill {
+    display: flex;
+    gap: 4px;
+    height: 48px;
+  }
+  .nav-item {
+    display: inline-flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    border-radius: 999px;
+    color: var(--t-icon);
+  }
+  .nav-item.is-active {
+    flex: 1;
+    padding: 0 16px;
+    background: var(--t-brand-subtle);
+    color: var(--t-brand);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .bottom-panel.is-typing .nav-pill {
+    display: none;
+  }
+
+  /* Chat result: scrim + card above the bar */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgb(12 17 24 / 0.4);
+    animation: fade 180ms ease-out;
+  }
+  .scrim[hidden] {
+    display: none;
+  }
+  .panel-slot {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 140px;
+    z-index: 2;
+  }
+  .bottom-panel.is-typing ~ .panel-slot,
+  .panel-slot.is-low {
+    bottom: 84px;
+  }
+  .tend :global(.confirm-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--t-border);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--t-shadow);
+    animation: rise 200ms ease-out;
+  }
+  .tend :global(.stack-sm) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tend :global(.confirm-rows) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tend :global(.confirm-row) {
+    display: flex;
+    gap: 12px;
+  }
+  .tend :global(.confirm-row > :first-child) {
+    flex-shrink: 0;
+    width: 88px;
+  }
+  .tend :global(.confirm-actions) {
+    display: flex;
+    gap: 8px;
+  }
+  .tend :global(.confirm-actions > *) {
+    flex: 1;
+  }
+  .tend :global(.btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+  .tend :global(.btn-primary) { background: var(--t-brand); color: #fff; }
+  .tend :global(.btn-primary:hover) { background: var(--t-brand-hover); }
+  .tend :global(.btn-secondary) { background: #fff; color: var(--t-text); border-color: var(--t-border-strong); }
+  .tend :global(.btn-secondary:hover) { background: var(--t-muted-bg); }
+  .tend :global(.pick) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--t-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .tend :global(.pick:hover) {
+    background: var(--t-muted-bg);
+  }
+  .tend :global(.pick svg) {
+    color: #6b7280;
+  }
+
+  .toast {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 160px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 16px;
+    min-height: 52px;
+    border-radius: 12px;
+    background: var(--t-inverse);
+    color: #fff;
+    font-size: 16px;
+    box-shadow: var(--t-shadow);
+    animation: rise 180ms ease-out;
+  }
+  .toast[hidden] {
+    display: none;
+  }
+  .toast button {
+    min-height: 44px;
+    padding: 0 8px;
+    border: 0;
+    background: none;
+    color: var(--t-brand-inverse);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .tend :focus-visible {
+    outline: 2px solid #0083ad;
+    outline-offset: 2px;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .demo {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      gap: var(--space-48);
+      padding: var(--space-48) var(--space-24);
+    }
+    .demo__text {
+      max-width: 520px;
+    }
+  }
+  @media (max-width: 767px) {
+    .demo {
+      padding: var(--space-32) var(--space-16);
+      border-radius: var(--radius-md);
+    }
+    .tend {
+      height: 640px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .try__arrow,
+    .tend :global(.confirm-card),
+    .toast,
+    .scrim {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type Client = { id: string; name: string; service: string; visits: { days: number; price: number }[] };
+  const START: Client[] = [
+    { id: 'jake', name: 'Jake Chen', service: 'SAT prep', visits: [{ days: 13, price: 60 }, { days: 6, price: 60 }] },
+    { id: 'emma', name: 'Emma Lopez', service: 'Piano', visits: [{ days: 6, price: 60 }] },
+    { id: 'sofia', name: 'Sofia Reyes', service: 'Guitar', visits: [{ days: 3, price: 45 }] },
+    { id: 'emmachen', name: 'Emma Chen', service: 'Math', visits: [] },
+  ];
+  const METHODS = ['cash app', 'cash', 'venmo', 'zelle', 'card', 'check'];
+  const cap = (s: string) => s.replace(/\b\w/g, (c) => c.toUpperCase());
+  const money = (n: number, cents = false) =>
+    n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 });
+  const ago = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+  const initials = (name: string) => name.split(' ').map((w) => w[0]).join('').slice(0, 2);
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] ?? c);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const chevron =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-chat-demo]')) {
+    const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const rowsEl = $('[data-rows]');
+    const emptyEl = $('[data-empty]');
+    const collectEl = $('[data-collect]');
+    const panel = $('[data-panel]');
+    const scrim = $('[data-scrim]');
+    const bar = $('[data-bar]');
+    const form = $<HTMLFormElement>('[data-form]');
+    const input = $<HTMLInputElement>('[data-input]');
+    const send = $('[data-send]');
+    const toast = $('[data-toast]');
+    const resetBtn = $('[data-reset]');
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-suggest]')];
+
+    $('[data-date]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+    let clients: Client[] = structuredClone(START);
+    let undoSnap: Client[] | null = null;
+    let toastTimer = 0;
+    let busy = false;
+
+    const owed = (c: Client) => c.visits.reduce((t, v) => t + v.price, 0);
+    const render = (changed?: string) => {
+      const owing = clients.filter((c) => c.visits.length);
+      rowsEl.innerHTML = owing
+        .map((c) => {
+          const overdue = c.visits[0].days > 7;
+          return `<li class="row${c.id === changed ? ' is-updated' : ''}" data-id="${c.id}">
+            <span class="avatar">${initials(c.name)}</span>
+            <span class="row-text"><span class="t-body-strong">${c.name}</span><span class="t-body-s muted">${c.service} · ${c.visits[0].days} days</span></span>
+            <span class="row-trailing"><span class="t-body-strong num">${money(owed(c))}</span><span class="pill ${overdue ? 'pill-overdue' : 'pill-owes'}">${overdue ? 'Overdue' : 'Owes'}</span></span>
+          </li>`;
+        })
+        .join('');
+      emptyEl.hidden = owing.length > 0;
+      const total = owing.reduce((t, c) => t + owed(c), 0);
+      collectEl.textContent = total ? `${money(total)} to collect` : 'All paid up';
+      if (changed) setTimeout(() => rowsEl.querySelector(`[data-id="${changed}"]`)?.classList.remove('is-updated'), 900);
+    };
+
+    const setTyping = () => {
+      const typing = document.activeElement === input || !!input.value;
+      bar.classList.toggle('is-typing', typing);
+      send.hidden = !input.value;
+    };
+    const closePanel = () => {
+      panel.innerHTML = '';
+      scrim.hidden = true;
+      busy = false;
+      chips.forEach((c) => (c.disabled = false));
+    };
+    const clearInput = () => {
+      input.value = '';
+      input.blur();
+      setTyping();
+    };
+    const showPanel = (html: string) => {
+      panel.innerHTML = html;
+      scrim.hidden = false;
+      panel.classList.toggle('is-low', bar.classList.contains('is-typing'));
+      panel.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+    };
+
+    // Same idea as the prototype's parser: who, how much, how. Payments only here.
+    const parse = (text: string) => {
+      const t = text.toLowerCase();
+      const amount = t.match(/\$?\s*(\d+(?:\.\d{1,2})?)/);
+      if (!/\bpa(id|y|ys|gó|go)\b/.test(t) || !amount) return null;
+      const method = cap(METHODS.find((m) => t.includes(m)) ?? 'cash');
+      const full = clients.filter((c) => t.includes(c.name.toLowerCase()));
+      const candidates = full.length ? full : clients.filter((c) => new RegExp(`\\b${c.name.split(' ')[0].toLowerCase()}\\b`).test(t));
+      return { amount: Number(amount[1]), method, candidates };
+    };
+
+    const confirm = (c: Client, amount: number, method: string) => {
+      const forVisit = c.visits[0] ? ago(c.visits[0].days) : '—';
+      showPanel(`<div class="confirm-card" role="dialog" aria-label="Add payment">
+        <div class="stack-sm"><span class="t-caption brand">tend understood</span><h3 class="t-title-s">Add payment</h3></div>
+        <div class="confirm-rows">
+          <div class="confirm-row"><span class="t-body-s muted">Client</span><span class="t-body-strong">${c.name}</span></div>
+          <div class="confirm-row"><span class="t-body-s muted">Amount</span><span class="t-body-strong">${money(amount, true)} · ${method}</span></div>
+          <div class="confirm-row"><span class="t-body-s muted">For</span><span class="t-body-strong">${forVisit}</span></div>
+        </div>
+        <div class="confirm-actions">
+          <button type="button" class="btn btn-secondary" data-edit>Edit</button>
+          <button type="button" class="btn btn-primary" data-save>Save</button>
+        </div>
+      </div>`);
+      panel.querySelector('[data-save]')!.addEventListener('click', () => save(c.id, amount));
+      panel.querySelector('[data-edit]')!.addEventListener('click', () => {
+        closePanel();
+        input.focus();
+        setTyping();
+      });
+      panel.querySelector<HTMLElement>('[data-save]')?.focus({ preventScroll: true });
+    };
+
+    const save = (id: string, amount: number) => {
+      undoSnap = structuredClone(clients);
+      // Like the prototype: the payment covers the oldest unpaid visits it fully pays for
+      const c = clients.find((x) => x.id === id)!;
+      let left = amount;
+      while (c.visits.length && left >= c.visits[0].price) left -= c.visits.shift()!.price;
+      closePanel();
+      clearInput();
+      const row = rowsEl.querySelector(`[data-id="${id}"]`);
+      const gone = !c.visits.length;
+      if (row && gone && !reduced) {
+        row.classList.add('is-leaving');
+        setTimeout(() => render(), 220);
+      } else render(gone ? undefined : id);
+      toast.hidden = false;
+      resetBtn.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => (toast.hidden = true), 5000);
+    };
+
+    const submit = (text: string) => {
+      if (busy || !text.trim()) return;
+      const r = parse(text);
+      busy = true;
+      chips.forEach((c) => (c.disabled = true));
+      if (!r || !r.candidates.length) {
+        showPanel(`<div class="confirm-card" role="dialog" aria-label="tend">
+          <p class="t-body-s">tend didn’t catch that. Try “Emma paid $60 cash”.</p>
+          <div class="confirm-actions"><button type="button" class="btn btn-secondary" data-close>Close</button></div>
+        </div>`);
+        panel.querySelector('[data-close]')!.addEventListener('click', closePanel);
+        return;
+      }
+      if (r.candidates.length > 1) {
+        const first = r.candidates[0].name.split(' ')[0];
+        showPanel(`<div class="confirm-card" role="dialog" aria-label="Which ${esc(first)}?">
+          <div class="stack-sm"><span class="t-caption brand">tend needs one detail</span><h3 class="t-title-s">Which ${esc(first)}?</h3></div>
+          <div>${r.candidates
+            .map((c) => `<button type="button" class="pick" data-pick="${c.id}"><span class="avatar">${initials(c.name)}</span><span class="row-text"><span class="t-body-strong">${c.name}</span><span class="t-body-s muted">${c.service}</span></span>${chevron}</button>`)
+            .join('')}</div>
+        </div>`);
+        panel.querySelectorAll<HTMLButtonElement>('[data-pick]').forEach((b) =>
+          b.addEventListener('click', () => confirm(clients.find((c) => c.id === b.dataset.pick)!, r.amount, r.method)),
+        );
+        return;
+      }
+      confirm(r.candidates[0], r.amount, r.method);
+    };
+
+    // Tapping a suggestion types it out, then sends, so it reads like someone using the app
+    const typeOut = async (text: string) => {
+      if (busy) return;
+      busy = true;
+      chips.forEach((c) => (c.disabled = true));
+      input.value = '';
+      bar.classList.add('is-typing');
+      for (let i = 1; i <= text.length; i++) {
+        input.value = text.slice(0, i);
+        send.hidden = false;
+        if (!reduced) await new Promise((r) => setTimeout(r, 32));
+      }
+      await new Promise((r) => setTimeout(r, reduced ? 0 : 250));
+      busy = false;
+      submit(text);
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submit(input.value);
+    });
+    input.addEventListener('input', setTyping);
+    input.addEventListener('focus', setTyping);
+    input.addEventListener('blur', () => setTimeout(setTyping, 0));
+    scrim.addEventListener('click', () => {
+      closePanel();
+      setTyping();
+    });
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !scrim.hidden) {
+        closePanel();
+        setTyping();
+      }
+    });
+    chips.forEach((c) => c.addEventListener('click', () => typeOut(c.dataset.suggest ?? '')));
+    $('[data-undo]').addEventListener('click', () => {
+      if (undoSnap) clients = undoSnap;
+      undoSnap = null;
+      toast.hidden = true;
+      render();
+    });
+    resetBtn.addEventListener('click', () => {
+      clients = structuredClone(START);
+      toast.hidden = true;
+      resetBtn.hidden = true;
+      closePanel();
+      clearInput();
+      render();
+    });
+
+    render();
+    setTyping();
+  }
+</script>

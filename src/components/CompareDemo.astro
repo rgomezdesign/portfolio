@@ -7,16 +7,20 @@ interface Props {
   after: Screen & { label: string };
   caption: string;
   tint: string;
+  /** 'phone' = a single phone screen, shown at phone width and centered */
+  size?: 'wide' | 'phone';
 }
-const { before, after, caption, tint } = Astro.props;
+const { before, after, caption, tint, size = 'wide' } = Astro.props;
+const sizes = size === 'phone' ? '(max-width: 767px) 80vw, 340px' : '(max-width: 767px) 92vw, 1040px';
+const widths = size === 'phone' ? [400, 700] : [800, 1536];
 ---
-<figure class="compare" data-reveal>
+<figure class:list={['compare', `compare--${size}`]} data-reveal>
   <div class="compare__panel" style={`--tint:${tint}`}>
     <p class="compare__try t-label-strong">Try it: drag to compare <span aria-hidden="true">↔</span></p>
     <div class="frame" data-compare style="--pos:50%">
-      <Image src={after.src} alt={after.alt} widths={[800, 1536]} sizes="(max-width: 767px) 92vw, 1040px" class="frame__img" loading="lazy" />
+      <Image src={after.src} alt={after.alt} widths={widths} sizes={sizes} class="frame__img" loading="lazy" />
       <div class="frame__before" aria-hidden="true">
-        <Image src={before.src} alt="" widths={[800, 1536]} sizes="(max-width: 767px) 92vw, 1040px" class="frame__img" loading="lazy" />
+        <Image src={before.src} alt="" widths={widths} sizes={sizes} class="frame__img" loading="lazy" />
       </div>
       <span class="tag tag--before t-caption">{before.label}</span>
       <span class="tag tag--after t-caption">{after.label}</span>
@@ -52,6 +56,14 @@ const { before, after, caption, tint } = Astro.props;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-media);
     user-select: none;
+  }
+  .compare--phone .compare__try {
+    justify-self: center;
+  }
+  .compare--phone .frame {
+    width: min(100%, 340px);
+    margin-inline: auto;
+    border-radius: 28px;
   }
   .frame__img {
     display: block;

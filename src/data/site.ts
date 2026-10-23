@@ -5,6 +5,9 @@ import etlHome from '../assets/work/eltoroloco/after-home-desktop.jpg';
 import nutuGoals from '../assets/work/nutu/goals-detail-after.png';
 import nutuUnlocked from '../assets/work/nutu/fy-unlocked.png';
 import nutuResults from '../assets/work/nutu/fy-results.png';
+import tendToday from '../assets/work/tend/today.png';
+import tendChat from '../assets/work/tend/chat-confirm.png';
+import tendClient from '../assets/work/tend/client.png';
 
 export const site = {
   name: 'Roman Gomez',
@@ -21,6 +24,10 @@ export const hero = {
   title: 'Designing thoughtful digital experiences.',
   lead: 'Through UI/UX, motion, and modern workflows that take ideas from first sketch to something real.',
 };
+
+// Home "Selected work" layout. 'featured' = first project full width, the rest in two columns.
+// 'grid' = the original even two-column grid (kept so we can switch back).
+export const homeLayout: 'featured' | 'grid' = 'featured';
 
 export type Project = {
   slug: string;
@@ -42,6 +49,18 @@ export const projects: Project[] = [
       kind: 'phones',
       screens: [nutuGoals, nutuUnlocked, nutuResults],
       alt: 'Three nutu screens: a goal in progress, Future You unlocked, and AI-generated results',
+    },
+  },
+  {
+    slug: 'tend',
+    title: 'tend',
+    summary: 'A simple app for solo workers to keep clients, appointments and payments in one place',
+    meta: ['Product design', 'My own product', 'In progress'],
+    tint: 'var(--color-project-tend)',
+    media: {
+      kind: 'phones',
+      screens: [tendToday, tendChat, tendClient],
+      alt: 'Three tend screens: Today with who owes you, the chat box confirming a payment, and a client page',
     },
   },
   {

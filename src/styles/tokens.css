@@ -25,6 +25,7 @@
   --primitive-tint-nutu: #d9e2dc;
   --primitive-tint-palazzo: #f1e2db;
   --primitive-tint-eltoroloco: #f8e6c9;
+  --primitive-tint-tend: #e1eef3;
   --primitive-nutu-green: #496257;
   --primitive-nutu-surface: #f6f7f2;
   --primitive-nutu-ink: #383838;
@@ -62,6 +63,7 @@
   --color-project-nuvem: var(--primitive-tint-stone);
   --color-project-sound-garden: var(--primitive-tint-butter);
   --color-project-eltoroloco: var(--primitive-tint-eltoroloco);
+  --color-project-tend: var(--primitive-tint-tend);
   /* Interactive case-study demos (recreate nutu app colors) */
   --color-demo-nutu-primary: var(--primitive-nutu-green);
   --color-demo-nutu-surface: var(--primitive-nutu-surface);
