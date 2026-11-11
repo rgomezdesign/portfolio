@@ -1,0 +1,632 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import type { Block } from '../data/cases/types';
+// Figures for the design system case studies (Figma "Portfolio system" / "tend system").
+// One component, one tinted panel style, several layouts picked by block type.
+type SystemBlock = Extract<Block, { type: 'token-layers' | 'decisions' | 'playground' | 'name-map' | 'contrast' | 'stats' | 'strip' }>;
+interface Props {
+  block: SystemBlock;
+  tint: string;
+}
+const { block, tint } = Astro.props;
+---
+<figure class:list={['sys', `sys--${block.type}`]} data-reveal>
+  <div class="sys__panel" style={`--tint:${tint}`}>
+    {block.type === 'token-layers' && (
+      <div class="sys__card tablewrap"><table class="layers">
+        <thead>
+          <tr><th scope="col">Primitive</th><th scope="col"><span class="visually-hidden">points to</span></th><th scope="col">Role</th><th scope="col">Used for</th></tr>
+        </thead>
+        <tbody>
+          {block.rows.map((r) => (
+            <tr>
+              <td>
+                <span class="layers__prim">
+                  <i class="swatch" style={`--c:${r.value}`}></i>
+                  <span class="t-label-strong">{r.primitive}</span>
+                  <span class="t-caption">{r.value.toUpperCase()}</span>
+                </span>
+              </td>
+              <td class="layers__arrow" aria-hidden="true">→</td>
+              <td class="t-label">{r.role}</td>
+              <td class="t-label layers__use">{r.use}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
+    )}
+
+    {block.type === 'decisions' && (
+      <ul class="decisions">
+        <li class="sys__card decision">
+          <div class="decision__visual">
+            <div class="decision__pair">
+              <div class="decision__col">
+                <span class="decision__orange t-label">View work</span>
+                <span class="badge badge--fail t-caption">3.3:1 Fails</span>
+              </div>
+              <div class="decision__col">
+                <span class="decision__ink t-label">View work</span>
+                <span class="badge t-caption">18.9:1 Passes</span>
+              </div>
+            </div>
+          </div>
+          <h3 class="t-label-strong">Orange is a signal, not a button</h3>
+          <p class="t-body">White on the logo orange is only 3.3:1. So buttons stay ink, and orange marks things: arrows, the active tab, the playing video.</p>
+        </li>
+        <li class="sys__card decision">
+          <div class="decision__visual">
+            <span class="decision__nav" aria-hidden="true"><span class="decision__nav-on t-label-strong">Work</span><span class="t-label">About</span></span>
+            <span class="badge t-caption">5.5:1 Passes</span>
+          </div>
+          <h3 class="t-label-strong">The active tab gets a tint</h3>
+          <p class="t-body">Dark orange text on a light orange tint reads at 5.5:1. It still feels on brand without using the logo orange for text.</p>
+        </li>
+        <li class="sys__card decision">
+          <div class="decision__visual decision__visual--start">
+            <p class="t-body">A clearer, easier website for a salon in Redlands</p>
+            <span class="badge t-caption">7.5:1 Passes</span>
+          </div>
+          <h3 class="t-label-strong">Descriptions are body text</h3>
+          <p class="t-body">Card and job descriptions use #52524E at full size, 7.5:1 on the page. They read like content, not a faded caption.</p>
+        </li>
+      </ul>
+    )}
+
+    {block.type === 'playground' && (
+      <div class="play" data-playground>
+        <div class="sys__card play__stage">
+          <Button href="#" class="play__btn" data-play-btn tabindex="-1" aria-hidden="true">View work</Button>
+        </div>
+        <form class="sys__card play__controls" aria-label="Button controls" onsubmit="return false">
+          {[
+            { name: 'variant', label: 'Variant', options: ['Primary', 'Secondary'] },
+            { name: 'state', label: 'State', options: ['Default', 'Hover', 'Focus', 'Pressed'] },
+            { name: 'icon', label: 'Icon', options: ['Off', 'On'] },
+          ].map((g) => (
+            <fieldset class="seg">
+              <legend class="t-caption">{g.label}</legend>
+              <div class="seg__track">
+                {g.options.map((o, i) => (
+                  <label class="seg__opt">
+                    <input type="radio" name={g.name} value={o.toLowerCase()} checked={i === 0} />
+                    <span class="t-label">{o}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <div class="play__code">
+            <span class="t-caption">In code</span>
+            <code class="t-caption" data-play-code aria-live="polite">&lt;Button&gt;View work&lt;/Button&gt;</code>
+          </div>
+        </form>
+      </div>
+    )}
+
+    {block.type === 'name-map' && (
+      <div class="map">
+        {block.tables.map((t) => (
+          <div class="sys__card tablewrap"><table class="map__table">
+            <caption class="t-label-strong">{t.title}</caption>
+            <thead><tr><th scope="col">Figma</th><th scope="col">Code</th></tr></thead>
+            <tbody>
+              {t.rows.map(([a, b]) => (
+                <tr><td class="t-label">{a}</td><td><code class="t-caption">{b}</code></td></tr>
+              ))}
+            </tbody>
+          </table></div>
+        ))}
+      </div>
+    )}
+
+    {block.type === 'contrast' && (
+      <div class="contrast">
+        <Image src={block.image.src} alt={block.image.alt} widths={[560, 840, 1120]} sizes="(max-width: 767px) 88vw, 560px" class="contrast__img" loading="lazy" />
+        <div class="sys__card tablewrap"><table class="contrast__table">
+          <thead><tr><th scope="col">Pair</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+          <tbody>
+            {block.rows.map(([pair, light, dark]) => (
+              <tr><td class="t-label">{pair}</td><td class="t-label-strong">{light}</td><td class="t-label-strong">{dark}</td></tr>
+            ))}
+          </tbody>
+        </table></div>
+      </div>
+    )}
+
+    {block.type === 'stats' && (
+      <div class="stats">
+        <ul class="stats__row">
+          {block.stats.map((s) => (
+            <li class="sys__card stat"><span class="t-h2">{s.value}</span><span class="t-label">{s.label}</span></li>
+          ))}
+        </ul>
+        <ul class="stats__parts" aria-label="Components">
+          {block.parts.map((p) => <li class="parts-tag t-caption">{p}</li>)}
+        </ul>
+      </div>
+    )}
+
+    {block.type === 'strip' && (
+      <div class="strip" tabindex="0" role="group" aria-label="Scrollable image">
+        <Image src={block.image.src} alt={block.image.alt} widths={[960, 1400, 1912]} sizes="(max-width: 767px) 900px, 1152px" class="strip__img" loading="lazy" />
+      </div>
+    )}
+  </div>
+  <figcaption class="t-caption">{block.caption}</figcaption>
+</figure>
+
+<script>
+  for (const pg of document.querySelectorAll<HTMLElement>('[data-playground]')) {
+    const btn = pg.querySelector<HTMLAnchorElement>('[data-play-btn]');
+    const code = pg.querySelector<HTMLElement>('[data-play-code]');
+    const form = pg.querySelector('form');
+    if (!btn || !form) continue;
+    const label = btn.querySelector('span');
+    // A copy of the external icon, shown when Icon = On
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('width', '18');
+    icon.setAttribute('height', '18');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('fill', 'none');
+    icon.setAttribute('stroke', 'currentColor');
+    icon.setAttribute('stroke-linecap', 'round');
+    icon.setAttribute('stroke-linejoin', 'round');
+    icon.innerHTML = '<path d="M8 16L16 8M9.5 8H16v6.5" stroke-width="1.8"/>';
+    const update = () => {
+      const data = new FormData(form);
+      const variant = String(data.get('variant'));
+      const state = String(data.get('state'));
+      const withIcon = data.get('icon') === 'on';
+      btn.classList.toggle('btn--primary', variant === 'primary');
+      btn.classList.toggle('btn--secondary', variant === 'secondary');
+      for (const s of ['hover', 'focus', 'pressed']) btn.classList.toggle(`is-${s}`, state === s);
+      if (withIcon && !icon.isConnected) btn.append(icon);
+      if (!withIcon) icon.remove();
+      if (label) label.textContent = withIcon ? 'Resume' : 'View work';
+      if (code) {
+        const attrs = [variant === 'secondary' ? ' variant="secondary"' : '', withIcon ? ' icon="external"' : ''].join('');
+        code.textContent = `<Button${attrs}>${withIcon ? 'Resume' : 'View work'}</Button>`;
+      }
+    };
+    form.addEventListener('change', update);
+    update();
+  }
+</script>
+
+<style>
+  .sys {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .sys__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .sys__card {
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+  }
+  .tablewrap {
+    padding: var(--space-24);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    padding-bottom: var(--space-8);
+    color: var(--color-text-tertiary);
+    font-size: var(--type-caption-size);
+    font-weight: 400;
+    text-align: left;
+  }
+  td {
+    padding-block: var(--space-12);
+    border-top: 1px solid var(--color-border-default);
+    vertical-align: middle;
+  }
+  code {
+    font-family: inherit;
+    color: var(--color-text-secondary);
+  }
+  .swatch {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--color-border-default);
+    border-radius: 6px;
+    background: var(--c);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+  }
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-status-pass);
+  }
+  .badge--fail {
+    border-color: var(--color-border-default);
+    background: var(--color-bg-subtle);
+  }
+  .badge--fail::before {
+    background: var(--color-status-fail);
+  }
+
+  /* Token layers */
+  .sys--token-layers .tablewrap {
+    padding: var(--space-32);
+  }
+  .layers__prim {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+  }
+  .layers__arrow {
+    width: 48px;
+    color: var(--color-text-tertiary);
+  }
+  .layers__use {
+    color: var(--color-text-secondary);
+  }
+
+  /* Decisions */
+  .decisions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-32);
+  }
+  .decision {
+    display: grid;
+    align-content: start;
+    gap: var(--space-16);
+    padding: var(--space-24);
+  }
+  .decision__visual {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: var(--space-12);
+    min-height: 170px;
+    padding: var(--space-20);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-page);
+  }
+  .decision__visual--start {
+    place-items: start;
+  }
+  .decision__pair {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-16);
+  }
+  .decision__col {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-8);
+  }
+  .decision__orange,
+  .decision__ink {
+    padding: var(--space-12) var(--space-20);
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+  }
+  .decision__orange {
+    background: var(--color-accent-brand);
+  }
+  .decision__ink {
+    background: var(--color-action-primary);
+  }
+  .decision__nav {
+    display: inline-flex;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-nav);
+  }
+  .decision__nav > span {
+    padding: var(--space-8) var(--space-16);
+  }
+  .decision__nav-on {
+    border-radius: var(--radius-full);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-text);
+  }
+
+  /* Playground */
+  .play {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: var(--space-32);
+  }
+  .play__stage {
+    display: grid;
+    place-items: center;
+    min-height: 360px;
+  }
+  .play__stage :global(.play__btn) {
+    pointer-events: none;
+  }
+  .play__controls {
+    display: grid;
+    align-content: start;
+    gap: var(--space-24);
+    padding: var(--space-24);
+  }
+  .seg {
+    display: grid;
+    gap: var(--space-8);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .seg legend {
+    padding: 0 0 var(--space-8);
+  }
+  .seg__track {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+  }
+  .seg__opt {
+    flex: 1;
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 36px;
+    padding: var(--space-6) var(--space-8);
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+  .seg__opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .seg__opt:has(input:checked) {
+    border-color: var(--color-border-strong);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+  }
+  .seg__opt:has(input:checked) span {
+    font-weight: 600;
+  }
+  .seg__opt:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+  .play__code {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .play__code code {
+    padding: var(--space-12);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-primary);
+  }
+
+  /* Name map */
+  .map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    max-width: 100%;
+    gap: var(--space-32);
+    align-items: start;
+  }
+  .map:has(> :only-child) {
+    max-width: 760px;
+  }
+  .map__table caption {
+    padding-bottom: var(--space-12);
+    text-align: left;
+  }
+  .map__table th,
+  .map__table td {
+    width: 50%;
+  }
+
+  /* Contrast */
+  .contrast {
+    display: grid;
+    grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-48);
+  }
+  .contrast__img,
+  .strip__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+  .contrast__table th + th,
+  .contrast__table td + td {
+    width: 64px;
+    text-align: right;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-40);
+  }
+  .stats__row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 300px));
+    gap: var(--space-24);
+  }
+  .stat {
+    display: grid;
+    gap: var(--space-8);
+    padding: var(--space-24);
+  }
+  .stat .t-label {
+    color: var(--color-text-secondary);
+  }
+  .stats__parts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-8);
+    max-width: 948px;
+  }
+  .parts-tag {
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  /* Strip */
+  .strip {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    scrollbar-width: thin;
+  }
+
+  @media (max-width: 1023px) {
+    .sys__panel {
+      padding: var(--space-40) var(--space-24);
+    }
+    .decisions,
+    .map,
+    .contrast,
+    .play {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .play__stage {
+      min-height: 220px;
+    }
+  }
+  @media (max-width: 767px) {
+    .sys__panel {
+      padding: var(--space-24) var(--space-20);
+      border-radius: var(--radius-md);
+    }
+    .decisions {
+      gap: var(--space-16);
+    }
+    .decision {
+      padding: var(--space-16);
+    }
+    .decision__visual {
+      min-height: 0;
+    }
+    .play {
+      gap: var(--space-16);
+    }
+    .play__stage {
+      min-height: 180px;
+    }
+    .play__controls {
+      padding: var(--space-16);
+      gap: var(--space-20);
+    }
+    .seg__opt {
+      padding-inline: var(--space-4);
+    }
+    /* Token rows stack on phones */
+    .layers,
+    .layers tbody,
+    .layers tr,
+    .layers td {
+      display: block;
+    }
+    .tablewrap,
+    .sys--token-layers .tablewrap {
+      padding: var(--space-16);
+    }
+    .layers thead {
+      display: none;
+    }
+    .layers tr {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: var(--space-8);
+      padding-block: var(--space-12);
+      border-top: 1px solid var(--color-border-default);
+    }
+    .layers tr:first-child {
+      border-top: 0;
+    }
+    .layers td {
+      padding: 0;
+      border: 0;
+    }
+    .layers td:first-child,
+    .layers__use {
+      grid-column: 1 / -1;
+    }
+    .layers__use {
+      padding-top: var(--space-4) !important;
+      font-size: var(--type-caption-size);
+    }
+    .layers__arrow {
+      width: auto;
+    }
+    .map__table caption {
+      padding-bottom: var(--space-8);
+    }
+    .map__table thead {
+      display: none;
+    }
+    .map__table tr {
+      display: grid;
+      gap: var(--space-4);
+      padding-block: var(--space-10);
+      border-top: 1px solid var(--color-border-default);
+    }
+    .map__table td {
+      width: auto;
+      padding: 0;
+      border: 0;
+    }
+    .stats__row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-8);
+      width: 100%;
+    }
+    .stat {
+      padding: var(--space-12);
+      gap: var(--space-4);
+    }
+    .stat .t-label {
+      font-size: var(--type-caption-size);
+    }
+    .stats__parts {
+      justify-content: flex-start;
+    }
+    .strip__img {
+      width: 900px;
+      max-width: none;
+    }
+  }
+</style>

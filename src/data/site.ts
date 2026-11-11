@@ -8,6 +8,13 @@ import nutuResults from '../assets/work/nutu/fy-results.png';
 import tendToday from '../assets/work/tend/today.png';
 import tendChat from '../assets/work/tend/chat-confirm.png';
 import tendClient from '../assets/work/tend/client.png';
+import feature01 from '../assets/motion/feature-01.png';
+import feature02 from '../assets/motion/feature-02.png';
+import feature03 from '../assets/motion/feature-03.png';
+import feature04 from '../assets/motion/feature-04.png';
+import feature05 from '../assets/motion/feature-05.png';
+import feature06 from '../assets/motion/feature-06.png';
+import feature07 from '../assets/motion/feature-07.png';
 
 export const site = {
   name: 'Roman Gomez',
@@ -35,7 +42,11 @@ export type Project = {
   summary: string;
   meta: string[];
   tint: string; // a --color-project-* token
-  media: { kind: 'browser'; image: ImageMetadata; alt: string } | { kind: 'phones'; screens: ImageMetadata[]; alt: string };
+  media:
+    | { kind: 'browser'; image: ImageMetadata; alt: string }
+    | { kind: 'phones'; screens: ImageMetadata[]; alt: string }
+    // Systems tab: a live specimen (type, colors, real components) instead of a screenshot
+    | { kind: 'specimen'; system: 'portfolio' | 'tend'; alt: string };
 };
 
 export const projects: Project[] = [
@@ -86,6 +97,82 @@ export const projects: Project[] = [
     meta: ['Web & ordering', 'Concept', '2025 — 2026'],
     tint: 'var(--color-project-eltoroloco)',
     media: { kind: 'browser', image: etlHome, alt: 'El Toro Loco concept homepage: “Bold flavor, made fresh daily.” over street tacos' },
+  },
+];
+
+// Home "Selected work" tabs. Mirrors Figma "Work Tabs" (Active = Product / Systems / Motion).
+export const workTabs = [
+  { id: 'product', label: 'Product', description: 'Apps and websites, from first sketch to launch.' },
+  { id: 'systems', label: 'Systems', description: 'The systems behind my work: tokens, components and the reasons behind them.' },
+  { id: 'motion', label: 'Motion', description: 'Feature videos and brand animation, from script to final cut.' },
+] as const;
+export type WorkTabId = (typeof workTabs)[number]['id'];
+
+// Systems tab. Each one opens its own case study at /work/<slug>.
+export const systems: Project[] = [
+  {
+    slug: 'portfolio-system',
+    title: 'Portfolio design system',
+    summary: 'The system behind this site, from tokens to components, matched 1:1 in code.',
+    meta: ['Design system', 'Figma + live site', '2026'],
+    tint: 'var(--color-accent-subtle)',
+    media: { kind: 'specimen', system: 'portfolio', alt: 'Specimen of the portfolio system: Inter, five colors, two buttons and a tag' },
+  },
+  {
+    slug: 'tend-system',
+    title: 'tend design system',
+    summary: 'Colors, type and components for my own app, built for light and dark.',
+    meta: ['Design system', 'My own product', 'In progress'],
+    tint: 'var(--color-project-tend)',
+    media: { kind: 'specimen', system: 'tend', alt: 'Specimen of the tend system: Plus Jakarta Sans, petrol colors, a Mark paid button and a status pill' },
+  },
+];
+
+// Motion tab: one featured series (YouTube) + smaller self-hosted loops.
+export type Video = { id: string; number: string; title: string; duration: string; poster: ImageMetadata };
+export const motionSeries = {
+  title: 'nutu feature guides',
+  summary:
+    'Seven short videos that show new users how the nutu app works. I wrote the scripts, storyboarded each one and animated them in Figma with the new nutu brand.',
+  meta: ['Motion design', 'Willow Laboratories', '2026'],
+  tint: 'var(--color-project-nutu-motion)',
+  playlist: 'https://www.youtube.com/playlist?list=PLZS3_Qm7NqLw',
+  videos: [
+    { id: 'Z_2vYMtMCZI', number: '01', title: 'Meet nutu', duration: '1:37', poster: feature01 },
+    { id: 'bbFldqBM1pk', number: '02', title: 'How nutu score works', duration: '1:08', poster: feature02 },
+    { id: 'ZNY4Qs1ZoDQ', number: '03', title: 'nutu score in food', duration: '0:53', poster: feature03 },
+    { id: 'Fpo0VdP6jv8', number: '04', title: 'Logging food', duration: '1:25', poster: feature04 },
+    { id: 'm8wG0ojeDpk', number: '05', title: 'Logging exercise', duration: '1:29', poster: feature05 },
+    { id: 'hVdXUXchGjE', number: '06', title: 'Reports', duration: '0:49', poster: feature06 },
+    { id: 'AV3kG5NQ9dA', number: '07', title: 'Lessons and weight', duration: '1:02', poster: feature07 },
+  ] satisfies Video[],
+};
+
+// Mirrors Figma "Motion Card". Files live in public/motion (small MP4 loops + JPG posters).
+export type MotionPiece = {
+  title: string;
+  summary: string;
+  meta: string[];
+  duration: string;
+  versions: { label: string; src: string; poster: string }[];
+};
+export const motionPieces: MotionPiece[] = [
+  {
+    title: 'nutu logo reveal',
+    summary: 'The knob rolls in, draws the track and nudges the name into place. Made for the new nutu brand.',
+    meta: ['Logo animation', 'nutu', '2026'],
+    duration: '0:04 loop',
+    versions: [
+      { label: 'Dark', src: '/motion/logo-reveal-dark.mp4', poster: '/motion/logo-reveal-dark.jpg' },
+      { label: 'Light', src: '/motion/logo-reveal-light.mp4', poster: '/motion/logo-reveal-light.jpg' },
+    ],
+  },
+  {
+    title: 'nutu end card',
+    summary: 'The closing shot for every feature video: logo, tagline and a download button.',
+    meta: ['Logo animation', 'Video end card', '2026'],
+    duration: '0:08 loop',
+    versions: [{ label: 'Light', src: '/motion/end-card.mp4', poster: '/motion/end-card.jpg' }],
   },
 ];
 

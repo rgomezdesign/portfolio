@@ -20,9 +20,23 @@ export type Block =
   // tend: a working recreation of the chat box ("Emma paid $60 cash" → confirm → saved)
   | { type: 'chat-demo'; statement: string; support: string }
   // The real site, embedded and usable, with desktop/phone views
-  | { type: 'live'; src: string; url: string; caption: string; hint?: string; title?: string };
+  | { type: 'live'; src: string; url: string; caption: string; hint?: string; title?: string }
+  // Design system pages (Figma "Portfolio system" / "tend system")
+  | { type: 'token-layers'; caption: string; rows: { primitive: string; value: string; role: string; use: string }[] }
+  | { type: 'decisions'; caption: string }
+  | { type: 'playground'; caption: string }
+  | { type: 'name-map'; caption: string; tables: { title: string; rows: [string, string][] }[] }
+  | { type: 'contrast'; caption: string; image: Screen; rows: [string, string, string][] }
+  | { type: 'stats'; caption: string; stats: { value: string; label: string }[]; parts: string[] }
+  // A wide image that scrolls sideways on phones instead of shrinking
+  | { type: 'strip'; caption: string; image: Screen };
 
-export type Cover = { kind: 'phones'; screens: Screen[] } | { kind: 'browser'; shot: Screen; url?: string; phone?: Screen };
+export type Cover =
+  | { kind: 'phones'; screens: Screen[] }
+  | { kind: 'browser'; shot: Screen; url?: string; phone?: Screen }
+  // Design system pages: a board of the real components, or a single image
+  | { kind: 'parts'; caption: string }
+  | { kind: 'image'; shot: Screen; caption: string };
 
 export type CaseStudy = {
   slug: string;
@@ -32,7 +46,7 @@ export type CaseStudy = {
   /** Shown as a small label next to the eyebrow, e.g. "In progress" */
   status?: string;
   meta: { label: string; value: string }[];
-  live?: { href: string; label: string };
+  live?: { href: string; label: string; /** Links inside the site: no new tab, no external icon */ internal?: boolean };
   cover: Cover;
   /** Each chapter is a group of blocks; chapters are spaced further apart than blocks. */
   chapters: Block[][];

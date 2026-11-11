@@ -1,0 +1,105 @@
+---
+import Button from './Button.astro';
+import WorkTabs from './WorkTabs.astro';
+import Eyebrow from './Eyebrow.astro';
+import BackLink from './BackLink.astro';
+import ProjectCard from './ProjectCard.astro';
+import { projects } from '../data/site';
+// Cover of the Portfolio system page (Figma "Cover" parts board): the real components,
+// side by side on the accent tint. It's a picture of the parts, so it's inert
+// (not clickable, skipped by screen readers) and described by the caption.
+interface Props {
+  caption: string;
+  tint: string;
+}
+const { caption, tint } = Astro.props;
+const palazzo = projects.find((p) => p.slug === 'palazzo-salon')!;
+---
+<figure class="parts" data-reveal>
+  <div class="parts__panel" style={`--tint:${tint}`} inert aria-hidden="true">
+    <div class="parts__col">
+      <WorkTabs tabs={[{ id: 'product', label: 'Product', count: 5 }, { id: 'systems', label: 'Systems', count: 2 }, { id: 'motion', label: 'Motion', count: 9 }]} active="systems" />
+      <div class="parts__row">
+        <Button href="#">View work</Button>
+        <Button href="#" variant="secondary" icon="external">Resume</Button>
+      </div>
+      <div class="parts__row">
+        <span class="parts__tag t-caption">Product design</span>
+        <span class="parts__tag t-caption">Web design</span>
+        <span class="parts__tag t-caption">2026</span>
+      </div>
+      <div class="parts__row parts__row--loose">
+        <BackLink href="#" />
+        <Eyebrow text="Product Designer" />
+      </div>
+    </div>
+    <ul class="parts__card">
+      <ProjectCard project={{ ...palazzo, tint: 'var(--color-bg-surface)' }} reveal={false} />
+    </ul>
+  </div>
+  <figcaption class="t-caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .parts {
+    display: grid;
+    gap: var(--space-16);
+    margin: 0;
+  }
+  .parts__panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-64);
+    padding: var(--space-64);
+    border-radius: var(--radius-lg);
+    background: var(--tint);
+  }
+  .parts__col {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-32);
+  }
+  .parts__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-12);
+  }
+  .parts__row--loose {
+    gap: var(--space-24);
+  }
+  .parts__tag {
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+  .parts__card {
+    width: min(100%, 420px);
+  }
+  @media (max-width: 1023px) {
+    .parts__panel {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-40);
+      padding: var(--space-40) var(--space-24);
+    }
+    .parts__card {
+      align-self: center;
+    }
+  }
+  @media (max-width: 767px) {
+    .parts__panel {
+      gap: var(--space-24);
+      padding: var(--space-24) var(--space-20);
+      border-radius: var(--radius-md);
+    }
+    .parts__col {
+      gap: var(--space-20);
+      justify-items: stretch;
+    }
+  }
+</style>

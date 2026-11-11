@@ -1,6 +1,7 @@
 ---
 import Icon, { type IconName } from './Icon.astro';
 // Mirrors Figma "Button": Variant = Primary | Secondary, optional trailing icon.
+// .is-hover / .is-focus / .is-pressed force a state (used by the design system playground).
 interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
@@ -45,7 +46,8 @@ const { href, variant = 'primary', icon, external = false, block = false, class:
     background: var(--color-action-primary);
     color: var(--color-text-inverse);
   }
-  .btn--primary:hover {
+  .btn--primary:hover,
+  .btn--primary.is-hover {
     background: var(--color-action-primary-hover);
   }
   .btn--secondary {
@@ -53,14 +55,17 @@ const { href, variant = 'primary', icon, external = false, block = false, class:
     border-color: var(--color-border-strong);
     color: var(--color-text-primary);
   }
-  .btn--secondary:hover {
+  .btn--secondary:hover,
+  .btn--secondary.is-hover {
     background: var(--color-action-secondary-hover);
     border-color: var(--color-icon-default);
   }
-  .btn:active {
+  .btn:active,
+  .btn.is-pressed {
     transform: scale(0.98);
   }
-  .btn:focus-visible {
+  .btn:focus-visible,
+  .btn.is-focus {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
     border-radius: var(--radius-full);

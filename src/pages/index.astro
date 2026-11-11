@@ -5,11 +5,15 @@ import PillNav from '../components/PillNav.astro';
 import TabBar from '../components/TabBar.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import Button from '../components/Button.astro';
-import SectionHeader from '../components/SectionHeader.astro';
+import WorkTabs from '../components/WorkTabs.astro';
+import MotionSeries from '../components/MotionSeries.astro';
+import MotionCard from '../components/MotionCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ExperienceItem from '../components/ExperienceItem.astro';
 import CopyEmail from '../components/CopyEmail.astro';
-import { site, hero, projects, about, experience, homeLayout } from '../data/site';
+import { site, hero, projects, systems, motionSeries, motionPieces, workTabs, about, experience, homeLayout } from '../data/site';
+const counts = { product: projects.length, systems: systems.length, motion: motionSeries.videos.length + motionPieces.length };
+const tabs = workTabs.map((t) => ({ ...t, count: counts[t.id] }));
 const year = new Date().getFullYear();
 ---
 <Base>
@@ -30,10 +34,50 @@ const year = new Date().getFullYear();
     </section>
 
     <section class="work" id="work" aria-labelledby="work-title">
-      <div data-reveal><SectionHeader id="work-title" title="Selected work" /></div>
-      <ul class="work__grid">
-        {projects.map((p, i) => <ProjectCard project={p} index={i} featured={homeLayout === 'featured' && i === 0} />)}
-      </ul>
+      <div class="work__head" data-reveal>
+        <div class="work__title">
+          <h2 class="t-h2" id="work-title">Selected work</h2>
+          {tabs.map((t, i) => (
+            <p class="t-body work__desc" data-desc={t.id} hidden={i > 0}>{t.description}</p>
+          ))}
+        </div>
+        <WorkTabs tabs={tabs} />
+      </div>
+
+      <div class="work__panel" id="panel-product" role="tabpanel" aria-labelledby="tab-product" tabindex="0" data-panel="product">
+        <ul class="work__grid">
+          {projects.map((p, i) => <ProjectCard project={p} index={i} featured={homeLayout === 'featured' && i === 0} />)}
+        </ul>
+      </div>
+
+      <div class="work__panel" id="panel-systems" role="tabpanel" aria-labelledby="tab-systems" tabindex="0" data-panel="systems">
+        <h3 class="visually-hidden">Systems</h3>
+        <ul class="work__grid">
+          {systems.map((p, i) => <ProjectCard project={p} index={i} />)}
+        </ul>
+        <section class="principles" aria-labelledby="principles-title">
+          <h3 class="t-h3" id="principles-title">How I approach systems</h3>
+          <ol class="principles__list">
+            <li><span class="principles__num t-caption">01</span><span class="t-label-strong">Decide once, write down why</span><p class="t-body">Every token comes with a reason, like a contrast ratio or a rule for when to use it.</p></li>
+            <li><span class="principles__num t-caption">02</span><span class="t-label-strong">Same names in Figma and code</span><p class="t-body"><code>color/bg/page</code> in Figma is <code>var(--color-bg-page)</code> on the site, so handoff is a lookup, not a guess.</p></li>
+            <li><span class="principles__num t-caption">03</span><span class="t-label-strong">Prove it in real screens</span><p class="t-body">A component is not done until it works in an actual layout, on phone and desktop.</p></li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="work__panel" id="panel-motion" role="tabpanel" aria-labelledby="tab-motion" tabindex="0" data-panel="motion">
+        <h3 class="visually-hidden">Motion</h3>
+        <MotionSeries {...motionSeries} />
+        <section class="more-motion" aria-labelledby="more-motion-title">
+          <div class="more-motion__head">
+            <h3 class="t-h3" id="more-motion-title">More motion</h3>
+            <p class="t-body">Smaller pieces from the same brand work. These play right here, on a loop.</p>
+          </div>
+          <ul class="work__grid more-motion__grid">
+            {motionPieces.map((piece) => <MotionCard piece={piece} />)}
+          </ul>
+        </section>
+      </div>
     </section>
 
     <div class="about-exp" id="about">
@@ -75,6 +119,62 @@ const year = new Date().getFullYear();
   <TabBar />
 </Base>
 
+<script>
+  // Work tabs: Product / Systems / Motion. #systems or #motion in the URL opens that tab.
+  const tablist = document.querySelector<HTMLElement>('[data-work-tabs]');
+  if (tablist) {
+    const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+    const descs = [...document.querySelectorAll<HTMLElement>('[data-desc]')];
+    const ids = tabs.map((t) => t.dataset.tab ?? '');
+
+    const select = (id: string, { focus = false, updateUrl = true } = {}) => {
+      for (const t of tabs) {
+        const on = t.dataset.tab === id;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      }
+      for (const p of panels) p.hidden = p.dataset.panel !== id;
+      for (const d of descs) d.hidden = d.dataset.desc !== id;
+      // Pause loops in panels that just got hidden
+      for (const v of document.querySelectorAll<HTMLVideoElement>('[data-panel][hidden] video')) v.pause();
+      if (updateUrl) history.replaceState(null, '', id === 'product' ? location.pathname + location.search : `#${id}`);
+    };
+
+    tablist.addEventListener('click', (e) => {
+      const tab = (e.target as Element).closest<HTMLButtonElement>('[role="tab"]');
+      if (tab?.dataset.tab) select(tab.dataset.tab);
+    });
+    tablist.addEventListener('keydown', (e) => {
+      const i = tabs.findIndex((t) => t === document.activeElement);
+      if (i < 0) return;
+      let next = -1;
+      if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      if (next < 0) return;
+      e.preventDefault();
+      select(ids[next], { focus: true });
+    });
+
+    // Links like /#systems from a case study, or a hash change on this page
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.slice(1);
+      if (ids.includes(id)) select(id, { updateUrl: false });
+    });
+
+    const fromHash = location.hash.slice(1);
+    if (ids.includes(fromHash)) {
+      select(fromHash, { updateUrl: false });
+      document.getElementById('work')?.scrollIntoView();
+    } else {
+      select('product', { updateUrl: false });
+    }
+  }
+</script>
+
 <style>
   .top {
     position: absolute;
@@ -108,10 +208,64 @@ const year = new Date().getFullYear();
     gap: var(--space-48);
     padding-top: var(--space-112);
   }
+  .work__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-24);
+  }
+  .work__title {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .work__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-80);
+  }
+  .work__panel[hidden] {
+    display: none;
+  }
+  .work__panel:focus-visible {
+    outline-offset: 8px;
+  }
   .work__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-80) var(--space-32);
+  }
+
+  .principles {
+    display: grid;
+    gap: var(--space-32);
+  }
+  .principles__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-32);
+  }
+  .principles__list li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-8);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--color-border-default);
+  }
+  .principles__num {
+    color: var(--color-accent-text);
+  }
+  .principles code {
+    font-family: inherit;
+    color: var(--color-text-primary);
+  }
+
+  .more-motion {
+    display: grid;
+    gap: var(--space-32);
+  }
+  .more-motion__head {
+    display: grid;
+    gap: var(--space-8);
   }
 
   .about-exp {
@@ -169,6 +323,10 @@ const year = new Date().getFullYear();
     .work__grid {
       gap: var(--space-64) var(--space-24);
     }
+    .principles__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-24);
+    }
     .about,
     .experience {
       grid-column: 1 / -1;
@@ -197,6 +355,14 @@ const year = new Date().getFullYear();
     .work {
       gap: var(--space-24);
       padding-top: var(--space-64);
+    }
+    .work__head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-20);
+    }
+    .work__panel {
+      gap: var(--space-64);
     }
     .work__grid {
       grid-template-columns: 1fr;

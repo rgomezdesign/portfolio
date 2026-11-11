@@ -22,9 +22,9 @@ const others = projects.filter((p) => p.slug !== current);
           <span class="row__thumb" style={`--tint:${p.tint}`}>
             {p.media.kind === 'browser' ? (
               <Image src={p.media.image} alt="" widths={[112, 224]} sizes="112px" class="row__img" />
-            ) : (
+            ) : p.media.kind === 'phones' ? (
               <Image src={p.media.screens[1]} alt="" widths={[64, 128]} sizes="40px" class="row__img row__img--phone" />
-            )}
+            ) : null}
           </span>
           <span class="row__text">
             <span class="t-label-strong">{p.title}</span>

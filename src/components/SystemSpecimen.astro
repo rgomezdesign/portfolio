@@ -1,0 +1,223 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+// Mirrors Figma "Media/System · Portfolio" and "Media/System · tend" (+ Compact).
+// A small specimen sheet: type, colors, a few real-looking components and one decision.
+// Purely visual (it sits inside a card link), so it is hidden from screen readers;
+// the card's media wrapper carries the description.
+interface Props {
+  system: 'portfolio' | 'tend';
+}
+const { system } = Astro.props;
+---
+<div class:list={['spec', `spec--${system}`]} aria-hidden="true">
+  <div class="spec__top">
+    <div class="spec__type">
+      <span class="spec__aa">Aa</span>
+      <span class="spec__note-type">
+        {system === 'portfolio' ? (
+          <><span class="spec__full">Inter, 6 sizes, 2 weights</span><span class="spec__short">Inter</span></>
+        ) : (
+          <><span class="spec__full">Plus Jakarta Sans, light + dark modes</span><span class="spec__short">Plus Jakarta Sans</span></>
+        )}
+      </span>
+    </div>
+    <div class="spec__swatches">
+      {(system === 'portfolio'
+        ? ['var(--primitive-neutral-900)', 'var(--primitive-neutral-600)', 'var(--primitive-neutral-50)', 'var(--primitive-orange-500)', 'var(--primitive-orange-700)']
+        : ['var(--tend-ink)', 'var(--tend-petrol)', 'var(--tend-tint)', '#ffffff']
+      ).map((c) => <i style={`--c:${c}`}></i>)}
+    </div>
+  </div>
+  <hr />
+  <div class="spec__parts">
+    {system === 'portfolio' ? (
+      <>
+        <span class="spec__btn spec__btn--primary">View work</span>
+        <span class="spec__btn spec__btn--secondary spec__full">Resume</span>
+        <span class="spec__tag">Web design</span>
+      </>
+    ) : (
+      <>
+        <span class="spec__tend-btn">Mark paid</span>
+        <span class="spec__tend-pill">To collect</span>
+      </>
+    )}
+  </div>
+  <p class="spec__decision">
+    {system === 'portfolio'
+      ? 'Orange is a signal, not a button. White on #DE6E21 is only 3.3:1, so buttons stay ink.'
+      : 'Petrol #08739A was pushed brighter until text on the tint just passed (4.51:1). Every key pair passes AA in both modes.'}
+  </p>
+</div>
+
+<style>
+  .spec {
+    /* tend values copied from the tend design system (they live in the tend Figma file) */
+    --tend-ink: #0c1118;
+    --tend-petrol: #08739a;
+    --tend-tint: #e1eef3;
+    position: absolute;
+    top: 11.5cqw;
+    left: 5.2cqw;
+    right: 5.2cqw;
+    display: grid;
+    gap: var(--space-24);
+    padding: var(--space-32);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-media);
+    transition:
+      transform 520ms var(--ease-out),
+      box-shadow 520ms var(--ease-out);
+  }
+  :global(.card:hover) .spec,
+  :global(.card:focus-visible) .spec {
+    transform: translateY(-8px);
+  }
+  .spec hr {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-default);
+  }
+  .spec__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-16);
+  }
+  .spec__type {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .spec__aa {
+    font-size: 64px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-text-primary);
+  }
+  .spec--tend .spec__aa {
+    font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 800;
+    color: var(--tend-ink);
+  }
+  .spec__note-type,
+  .spec__decision {
+    font-size: var(--type-caption-size);
+    line-height: 1.5;
+  }
+  .spec__note-type {
+    color: var(--color-text-tertiary);
+  }
+  .spec__short {
+    display: none;
+  }
+  .spec__swatches {
+    display: flex;
+    gap: var(--space-8);
+  }
+  .spec__swatches i {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    background: var(--c);
+  }
+  .spec__parts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-12);
+  }
+  /* Same tokens as Button / Tag (visual copies: real links can't nest inside the card link) */
+  .spec__btn {
+    padding: var(--space-12) var(--space-20);
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    font-size: var(--type-label-size);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .spec__btn--primary {
+    background: var(--color-action-primary);
+    color: var(--color-text-inverse);
+  }
+  .spec__btn--secondary {
+    border-color: var(--color-border-strong);
+    background: var(--color-action-secondary);
+    color: var(--color-text-primary);
+  }
+  .spec__tag {
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    font-size: var(--type-caption-size);
+    line-height: 1.4;
+  }
+  .spec__tend-btn,
+  .spec__tend-pill {
+    font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 600;
+  }
+  .spec__tend-btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: var(--tend-petrol);
+    color: #fff;
+    font-size: 15px;
+  }
+  .spec__tend-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--tend-tint);
+    color: var(--tend-petrol);
+    font-size: 13px;
+  }
+  .spec__decision {
+    position: relative;
+    margin: 0;
+    padding-left: var(--space-16);
+    color: var(--color-text-secondary);
+  }
+  .spec__decision::before {
+    content: '';
+    position: absolute;
+    top: 0.55em;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent-brand);
+  }
+  .spec--tend .spec__decision::before {
+    background: var(--tend-petrol);
+  }
+
+  /* Compact (phone cards and narrow columns): mirrors "Media/System · … · Compact" */
+  @container (max-width: 520px) {
+    .spec {
+      gap: var(--space-16);
+      padding: var(--space-20);
+    }
+    .spec__aa {
+      font-size: 44px;
+    }
+    .spec__full,
+    .spec__decision {
+      display: none;
+    }
+    .spec__short {
+      display: inline;
+    }
+    .spec__swatches {
+      gap: var(--space-6);
+    }
+    .spec__swatches i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+    }
+  }
+</style>

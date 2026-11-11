@@ -1,0 +1,224 @@
+---
+import type { MotionPiece } from '../data/site';
+// Mirrors Figma "Motion Card" (Size Default / Compact).
+// Short self-hosted MP4 loops: muted, play while on screen, pause when off screen.
+// With "reduce motion" on they stay still until the visitor presses play.
+interface Props {
+  piece: MotionPiece;
+}
+const { piece } = Astro.props;
+const first = piece.versions[0];
+---
+<li class="motion" data-motion-card>
+  <div class="motion__media">
+    <video
+      class="motion__video"
+      src={first.src}
+      poster={first.poster}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-label={`${piece.title}, ${first.label.toLowerCase()} version (silent loop)`}
+      data-motion-video
+    ></video>
+    <span class="motion__chip t-caption" aria-hidden="true">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+      {piece.duration}
+    </span>
+    {piece.versions.length > 1 && (
+      <div class="motion__toggle" role="group" aria-label="Version">
+        {piece.versions.map((v, i) => (
+          <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-src={v.src} data-poster={v.poster} data-label={v.label}>{v.label}</button>
+        ))}
+      </div>
+    )}
+    <button type="button" class="motion__pause" data-motion-toggle aria-label={`Pause ${piece.title}`}>
+      <svg class="motion__icon-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></svg>
+      <svg class="motion__icon-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <div class="motion__text">
+    <h3 class="t-h3">{piece.title}</h3>
+    <p class="t-body">{piece.summary}</p>
+    <ul class="motion__tags" aria-label="Project details">
+      {piece.meta.map((m) => <li class="tag t-caption">{m}</li>)}
+    </ul>
+  </div>
+</li>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-motion-card]')];
+
+  for (const card of cards) {
+    const video = card.querySelector<HTMLVideoElement>('[data-motion-video]');
+    const toggle = card.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+    const title = card.querySelector('h3')?.textContent ?? '';
+    if (!video || !toggle) continue;
+    // Paused by the visitor (or by reduced motion): don't auto-resume
+    let userPaused = reduce.matches;
+
+    const sync = () => {
+      card.classList.toggle('is-paused', video.paused);
+      toggle.setAttribute('aria-label', `${video.paused ? 'Play' : 'Pause'} ${title}`);
+    };
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    sync();
+
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        userPaused = false;
+        video.play().catch(() => {});
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+
+    // Play only while visible (and only if the tab panel is showing)
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !userPaused) video.play().catch(() => {});
+          else if (!entry.isIntersecting) video.pause();
+        },
+        { threshold: 0.4 },
+      ).observe(video);
+    }
+
+    // Light / Dark versions
+    const versionButtons = [...card.querySelectorAll<HTMLButtonElement>('.motion__toggle button')];
+    for (const b of versionButtons) {
+      b.addEventListener('click', () => {
+        for (const o of versionButtons) o.setAttribute('aria-pressed', String(o === b));
+        const wasPlaying = !video.paused;
+        video.poster = b.dataset.poster ?? '';
+        video.src = b.dataset.src ?? '';
+        video.setAttribute('aria-label', `${title}, ${(b.dataset.label ?? '').toLowerCase()} version (silent loop)`);
+        if (wasPlaying || !userPaused) video.play().catch(() => {});
+      });
+    }
+  }
+</script>
+
+<style>
+  .motion {
+    display: grid;
+    gap: var(--space-16);
+    align-content: start;
+  }
+  .motion__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-subtle);
+  }
+  .motion__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .motion__chip,
+  .motion__toggle,
+  .motion__pause {
+    position: absolute;
+    border-radius: var(--radius-full);
+    background: rgb(255 255 255 / 0.92);
+  }
+  .motion__chip {
+    top: var(--space-12);
+    left: var(--space-12);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-12) var(--space-4) var(--space-10);
+    color: var(--color-text-primary);
+  }
+  .motion__chip svg {
+    color: var(--color-icon-default);
+  }
+  .motion__toggle {
+    top: var(--space-12);
+    right: var(--space-12);
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+  }
+  .motion__toggle button {
+    min-height: 28px;
+    padding: 3px var(--space-10);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    cursor: pointer;
+  }
+  .motion__toggle button[aria-pressed='true'] {
+    background: var(--color-text-primary);
+    color: var(--color-text-inverse);
+  }
+  .motion__pause {
+    right: var(--space-12);
+    bottom: var(--space-12);
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+  .motion__media:hover .motion__pause,
+  .motion__pause:focus-visible,
+  .motion.is-paused .motion__pause {
+    opacity: 1;
+  }
+  .motion__icon-play,
+  .motion.is-paused .motion__icon-pause {
+    display: none;
+  }
+  .motion.is-paused .motion__icon-play {
+    display: block;
+  }
+  /* Touch screens have no hover: keep the control visible */
+  @media (hover: none) {
+    .motion__pause {
+      opacity: 1;
+    }
+  }
+  .motion__text {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .motion__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    padding-top: var(--space-8);
+  }
+  .tag {
+    padding: var(--space-4) var(--space-10);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+  @media (max-width: 767px) {
+    .motion {
+      gap: var(--space-12);
+    }
+    .motion__media {
+      border-radius: var(--radius-md);
+    }
+  }
+</style>

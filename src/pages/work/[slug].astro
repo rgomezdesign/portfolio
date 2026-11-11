@@ -19,18 +19,22 @@ import CaseGallery from '../../components/CaseGallery.astro';
 import CompareDemo from '../../components/CompareDemo.astro';
 import LiveSite from '../../components/LiveSite.astro';
 import ChatDemo from '../../components/ChatDemo.astro';
-import { projects } from '../../data/site';
+import SystemParts from '../../components/SystemParts.astro';
+import SystemFigure from '../../components/SystemFigure.astro';
+import { projects, systems } from '../../data/site';
 import { caseStudies } from '../../data/cases';
 
 // Mirrors the Figma case study template ("nutu · Desktop 1440" / "nutu · Mobile 390").
 // Projects without a written case study yet fall back to a short placeholder.
 export function getStaticPaths() {
-  return projects.map((project) => ({
+  return [...projects, ...systems].map((project) => ({
     params: { slug: project.slug },
-    props: { project },
+    props: { project, isSystem: systems.includes(project) },
   }));
 }
-const { project } = Astro.props;
+const { project, isSystem } = Astro.props;
+// System pages go back to the Systems tab on the home page
+const backHref = isSystem ? '/#systems' : '/#work';
 const study = caseStudies[project.slug];
 const year = new Date().getFullYear();
 ---
@@ -44,7 +48,7 @@ const year = new Date().getFullYear();
     {study ? (
       <>
         <header class="case__header">
-          <div class="enter" style="--i:0"><BackLink /></div>
+          <div class="enter" style="--i:0"><BackLink href={backHref} /></div>
           <div class="case__eyebrow enter" style="--i:1">
             <Eyebrow text={study.eyebrow} />
             {study.status && <span class="case__status t-caption">{study.status}</span>}
@@ -54,7 +58,11 @@ const year = new Date().getFullYear();
           <div class="enter" style="--i:4"><CaseMeta items={study.meta} /></div>
           {study.live && (
             <div class="enter" style="--i:5">
-              <Button href={study.live.href} variant="secondary" icon="external" external>{study.live.label}</Button>
+              {study.live.internal ? (
+                <Button href={study.live.href} variant="secondary" icon="arrow-right">{study.live.label}</Button>
+              ) : (
+                <Button href={study.live.href} variant="secondary" icon="external" external>{study.live.label}</Button>
+              )}
             </div>
           )}
         </header>
@@ -62,6 +70,10 @@ const year = new Date().getFullYear();
         <div class="enter" style="--i:5">
           {study.cover.kind === 'phones' ? (
             <CaseScreens screens={study.cover.screens} tint={project.tint} size="cover" eager />
+          ) : study.cover.kind === 'parts' ? (
+            <SystemParts caption={study.cover.caption} tint={project.tint} />
+          ) : study.cover.kind === 'image' ? (
+            <CaseGallery images={[study.cover.shot]} caption={study.cover.caption} tint={project.tint} layout="portrait" />
           ) : (
             <CaseBrowser shot={study.cover.shot} url={study.cover.url} phone={study.cover.phone} tint={project.tint} size="cover" eager />
           )}
@@ -88,6 +100,8 @@ const year = new Date().getFullYear();
                 <ChatDemo statement={block.statement} support={block.support} tint={project.tint} />
               ) : block.type === 'live' ? (
                 <LiveSite src={block.src} url={block.url} caption={block.caption} hint={block.hint} title={block.title} tint={project.tint} />
+              ) : block.type === 'token-layers' || block.type === 'decisions' || block.type === 'playground' || block.type === 'name-map' || block.type === 'contrast' || block.type === 'stats' || block.type === 'strip' ? (
+                <SystemFigure block={block} tint={project.tint} />
               ) : block.type === 'balance-demo' ? (
                 <BalanceDemo caption={block.caption} screens={block.screens} tint={project.tint} />
               ) : (

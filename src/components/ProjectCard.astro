@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
+import SystemSpecimen from './SystemSpecimen.astro';
 import type { Project } from '../data/site';
 // Mirrors Figma "Project Card" (Size Default/Compact handled by container units) + Media/Browser, Media/Phones.
 interface Props {
@@ -8,11 +9,13 @@ interface Props {
   index?: number;
   /** Full-width card at the top of the grid: media and text side by side (stacks on phones) */
   featured?: boolean;
+  /** Scroll-reveal animation (off for cards inside hidden tab panels) */
+  reveal?: boolean;
 }
-const { project, index = 0, featured = false } = Astro.props;
+const { project, index = 0, featured = false, reveal = true } = Astro.props;
 const { slug, title, summary, meta, tint, media } = project;
 ---
-<li class:list={['card-item', { 'card-item--featured': featured }]} data-reveal style={`--i:${index % 2}`}>
+<li class:list={['card-item', { 'card-item--featured': featured }]} data-reveal={reveal ? '' : undefined} style={`--i:${index % 2}`}>
   <a class:list={['card', { 'card--featured': featured }]} href={`/work/${slug}`}>
     <div class="card__media" style={`--tint:${tint}`}>
       {media.kind === 'browser' ? (
@@ -27,6 +30,8 @@ const { slug, title, summary, meta, tint, media } = project;
             loading={index < 2 ? 'eager' : 'lazy'}
           />
         </div>
+      ) : media.kind === 'specimen' ? (
+        <div class="specimen" role="img" aria-label={media.alt}><SystemSpecimen system={media.system} /></div>
       ) : (
         <div class="phones" role="img" aria-label={media.alt}>
           {media.screens.map((src, p) => (
